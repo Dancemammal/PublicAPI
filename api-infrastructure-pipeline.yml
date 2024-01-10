@@ -21,8 +21,8 @@ variables:
   resourceGroupName: 'dfe-development'
   location: 'uksouth'
   azureSubscription: 'AzureConnection'
-  templateFile: 'main.bicep'
-  templateParams: 'main.bicepparam'
+  templateFile: '../public-api/main.bicep'
+  templateParams: '../public-api/main.bicepparam'
 
 
 pool:
