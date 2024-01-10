@@ -35,6 +35,12 @@ stages:
     steps:
     ####### Check Infrastructure ########
     - checkout: self
+    - task: CmdLine@2
+      displayName: List files2
+      inputs:
+        script: |
+          echo "Structure of work folder of this pipeline:"
+          tree $(Pipeline.Workspace)
     - task: AzureCLI@2
       inputs:
         azureSubscription: $(azureSubscription) 
