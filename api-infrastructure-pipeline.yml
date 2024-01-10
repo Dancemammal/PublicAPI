@@ -34,6 +34,7 @@ stages:
   - job: Check_Infrastructure
     steps:
     ####### Check Infrastructure ########
+    - checkout: self
     - task: AzureCLI@2
       inputs:
         azureSubscription: $(azureSubscription) 
