@@ -35,6 +35,13 @@ stages:
     steps:
     ####### Check Infrastructure ########
     - checkout: self
+    - task: CmdLine@2
+      displayName: List files2
+      inputs:
+        script: |
+          echo "Structure of work folder of this pipeline:"
+          tree $(Pipeline.Workspace)
+
     - task: AzureCLI@2
       inputs:
         azureSubscription: $(azureSubscription) 
@@ -48,7 +55,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(templateFile) --parameters $(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Pipeline.Workspace)$(templateFile) --parameters $(Pipeline.Workspace)$(templateParams)'
         
     - task: AzureCLI@2  
       displayName: 'Build bicep artifact' 
