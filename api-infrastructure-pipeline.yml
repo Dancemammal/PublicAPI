@@ -41,6 +41,7 @@ stages:
         script: |
           echo "Structure of work folder of this pipeline:"
           tree $(Pipeline.Workspace)
+          tree $(System.DefaultWorkingDirectory)
 
     - task: AzureCLI@2
       inputs:
