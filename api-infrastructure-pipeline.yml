@@ -55,7 +55,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'  
         scriptLocation: 'inlineScript'  
-        inlineScript: 'az bicep build --file main.bicep'  
+        inlineScript: 'az bicep build --file $(templateFile)'  
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifact in pipeline'
