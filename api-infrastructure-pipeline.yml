@@ -19,8 +19,11 @@ variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   vmImageName: 'ubuntu-latest'
   resourceGroupName: 'dfe-development'
+  location: 'uksouth'
+  azureSubscription: 'AzureConnection'
   templateFile: 'main.bicep'
   templateParams: 'main.bicepparam'
+
 
 pool:
   vmImage: $(vmImageName)
@@ -87,8 +90,8 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az deployment group create  `
-                --template-file $(Build.SourcesDirectory)/main.bicep `
-                --parameters $(Build.SourcesDirectory)/main.bicepparam `
+                --template-file $(Build.SourcesDirectory)/$(templateFile) `
+                --parameters $(Build.SourcesDirectory)/$(templateParams) `
                 --resource-group $(ResourceGroupName) `
                 --parameters resourcePrefix=$(resourceprefix)
 
