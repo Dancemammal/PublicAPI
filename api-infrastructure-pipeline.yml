@@ -1,3 +1,6 @@
+# Infrastructure 
+# Check and build infrastructure 
+
 trigger:
   batch: true
   branches:
@@ -9,29 +12,84 @@ trigger:
     - infrastructure/public-api/*
 pr: none
 
+name: Deploy Public API Bicep files
+
+variables:
+  isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  vmImageName: 'ubuntu-latest'
+  resourceGroupName: 'dfe-development'
+  templateFile: 'main.bicep'
+  templateParams: 'main.bicepparam'
+
 pool:
-  vmImage: ubuntu-latest
+  vmImage: $(vmImageName)
 
-steps:
-- task: AzureCLI@2
-  inputs:
-    scriptType: 'bash' # You could also use Batch or PowerShell if desired
-    scriptLocation: 'inlineScript'
-    inlineScript: 'az bicep install'
+stages:
+- stage: Build
+  jobs:
+  - job: Check_Infrastructure
+    steps:
+    ####### Check Infrastructure ########
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(azureSubscription) 
+        scriptType: 'bash' # You could also use Batch or PowerShell if desired
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az bicep install'
 
-- task: AzureCLI@2
-  inputs:
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: 'az deployment group validate --resource-group dfe-development --template-file Code/main.bicep --parameters Code/main.bicepparam'
-    
-- task: CopyFiles@2
-  inputs:
-    Contents: 'Code/**'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: AzureCLI@2
+      displayName: 'Validate bicep scripts' 
+      inputs:
+        azureSubscription: $(azureSubscription) 
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(templateFile) --parameters $(templateParams)'
+        
+    - task: AzureCLI@2  
+      displayName: 'Build bicep artifact' 
+      inputs:
+        azureSubscription: $(azureSubscription) 
+        scriptType: 'pscore'  
+        scriptLocation: 'inlineScript'  
+        inlineScript: 'az bicep build --file main.bicep'  
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifact in pipeline'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/main.json'  
+        ArtifactName: 'finishedTemplate'  
+        publishLocation: 'Container' 
+
+# Begin Deployment Stage
+# Environments Dev, Test, Pre-prod and Prod
+
+- stage: Deploy_Dev
+  displayName: Deploy to Development
+  condition: and(succeeded(), eq(variables.isDev, 'true'))
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy Infrastructure'
+    environment: 'Dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          #### Task DEPLOY INFRASTRUCTURE ########
+          - download: none
+          - checkout: self
+          - task: AzureCLI@2
+            displayName: 'Deploy bicep template'
+            inputs:
+              azureSubscription: $(azureSubscription) 
+              scriptType: 'pscore'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az deployment group create  `
+                --template-file $(Build.SourcesDirectory)/main.bicep `
+                --parameters $(Build.SourcesDirectory)/main.bicepparam `
+                --resource-group $(ResourceGroupName) `
+                --parameters resourcePrefix=$(resourceprefix)
+
+

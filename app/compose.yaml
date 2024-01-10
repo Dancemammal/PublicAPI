@@ -1,0 +1,4 @@
+services:
+  public-api-app:
+    build:
+      context: .
