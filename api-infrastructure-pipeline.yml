@@ -21,8 +21,8 @@ variables:
   resourceGroupName: 'dfe-development'
   location: 'uksouth'
   azureSubscription: 'AzureConnection'
-  templateFile: '../public-api/main.bicep'
-  templateParams: '../public-api/main.bicepparam'
+  templateFile: '/public-api/main.bicep'
+  templateParams: '/public-api/main.bicepparam'
 
 
 pool:
@@ -48,7 +48,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(templateFile) --parameters $(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Pipeline.Workspace)$(templateFile) --parameters $(Pipeline.Workspace)$(templateParams)'
         
     - task: AzureCLI@2  
       displayName: 'Build bicep artifact' 
