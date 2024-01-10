@@ -89,6 +89,7 @@ stages:
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |
+                az group create --name $(ResourceGroupName) --location $(location)
                 az deployment group create  `
                 --template-file $(Build.SourcesDirectory)/$(templateFile) `
                 --parameters $(Build.SourcesDirectory)/$(templateParams) `
