@@ -55,7 +55,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Pipeline.Workspace)$(templateFile) --parameters $(Pipeline.Workspace)$(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(System.DefaultWorkingDirectory)$(templateFile) --parameters $(System.DefaultWorkingDirectory)$(templateParams)'
         
     - task: AzureCLI@2  
       displayName: 'Build bicep artifact' 
