@@ -34,6 +34,7 @@ stages:
   - job: Check_Infrastructure
     steps:
     ####### Check Infrastructure ########
+    - checkout: self
     - task: AzureCLI@2
       inputs:
         azureSubscription: $(azureSubscription) 
@@ -55,7 +56,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'  
         scriptLocation: 'inlineScript'  
-        inlineScript: 'az bicep build --file main.bicep'  
+        inlineScript: 'az bicep build --file $(templateFile)'  
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifact in pipeline'
@@ -89,11 +90,8 @@ stages:
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                az group create --name $(ResourceGroupName) --location $(location)
                 az deployment group create  `
                 --template-file $(Build.SourcesDirectory)/$(templateFile) `
                 --parameters $(Build.SourcesDirectory)/$(templateParams) `
                 --resource-group $(ResourceGroupName) `
                 --parameters resourcePrefix=$(resourceprefix)
-
-
