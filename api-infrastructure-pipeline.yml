@@ -36,7 +36,7 @@ stages:
     ####### Check Infrastructure ########
     - checkout: self
     - task: CmdLine@2
-      displayName: List source files
+      displayName: 'List source files'
       inputs:
         script: |
           echo "Structure of work folder of this pipeline:"
@@ -44,6 +44,7 @@ stages:
           tree $(Build.SourcesDirectory)
 
     - task: AzureCLI@2
+      displayName: 'Install Bicep' 
       inputs:
         azureSubscription: $(azureSubscription) 
         scriptType: 'bash' # You could also use Batch or PowerShell if desired
@@ -67,7 +68,7 @@ stages:
         inlineScript: 'az bicep build --file $(Build.SourcesDirectory)$(templateFile)'  
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish artifact in pipeline'
+      displayName: 'Publish json artifact in pipeline'
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)'  
         ArtifactName: 'finishedTemplate'  
@@ -77,7 +78,7 @@ stages:
 # Environments Dev, Test, Pre-prod and Prod
 
 - stage: Deploy_Dev
-  displayName: Deploy to Development
+  displayName: 'Deploy to Development'
   condition: and(succeeded(), eq(variables.isDev, 'true'))
   dependsOn: Build
   jobs:
@@ -92,7 +93,7 @@ stages:
           - download: none
           - checkout: none
           - task: CmdLine@2
-            displayName: List build source files
+            displayName: 'List build source files'
             inputs:
               script: |
                 echo "Structure of work folder of this pipeline:"
@@ -100,7 +101,7 @@ stages:
                 tree $(Pipeline.Workspace)
                 tree $(Build.SourcesDirectory)
           - task: AzureCLI@2
-            displayName: 'Deploy bicep template'
+            displayName: 'Deploy bicep template to Azure'
             inputs:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
