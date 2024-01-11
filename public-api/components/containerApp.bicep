@@ -145,7 +145,6 @@ module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seed
   }
 }
 
-
 //Managed Identity
 resource uai 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   name: UserIdentityName
