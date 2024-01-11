@@ -5,7 +5,7 @@ trigger:
   batch: true
   branches:
     include:
-    - master
+    - main
     - dev
   paths:
     include:
@@ -36,13 +36,15 @@ stages:
     ####### Check Infrastructure ########
     - checkout: self
     - task: CmdLine@2
-      displayName: List files2
+      displayName: 'List source files'
       inputs:
         script: |
           echo "Structure of work folder of this pipeline:"
           tree $(Pipeline.Workspace)
-          tree $(System.DefaultWorkingDirectory)
+          tree $(Build.SourcesDirectory)
+
     - task: AzureCLI@2
+      displayName: 'Install Bicep' 
       inputs:
         azureSubscription: $(azureSubscription) 
         scriptType: 'bash' # You could also use Batch or PowerShell if desired
@@ -55,20 +57,20 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(System.DefaultWorkingDirectory)$(templateFile) --parameters $(System.DefaultWorkingDirectory)$(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
         
     - task: AzureCLI@2  
-      displayName: 'Build bicep artifact' 
+      displayName: 'Build bicep artifact for testing' 
       inputs:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'  
         scriptLocation: 'inlineScript'  
-        inlineScript: 'az bicep build --file $(templateFile)'  
+        inlineScript: 'az bicep build --file $(Build.SourcesDirectory)$(templateFile)'  
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish artifact in pipeline'
+      displayName: 'Publish json artifact in pipeline'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/main.json'  
+        PathtoPublish: '$(Build.SourcesDirectory)'  
         ArtifactName: 'finishedTemplate'  
         publishLocation: 'Container' 
 
@@ -76,7 +78,7 @@ stages:
 # Environments Dev, Test, Pre-prod and Prod
 
 - stage: Deploy_Dev
-  displayName: Deploy to Development
+  displayName: 'Deploy to Development'
   condition: and(succeeded(), eq(variables.isDev, 'true'))
   dependsOn: Build
   jobs:
@@ -89,16 +91,19 @@ stages:
           steps:
           #### Task DEPLOY INFRASTRUCTURE ########
           - download: none
-          - checkout: self
+          - checkout: none
+          - task: CmdLine@2
+            displayName: 'List build source files'
+            inputs:
+              script: |
+                echo "Structure of work folder of this pipeline:"
+                echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
+                tree $(Pipeline.Workspace)
+                tree $(Build.SourcesDirectory)
           - task: AzureCLI@2
-            displayName: 'Deploy bicep template'
+            displayName: 'Deploy bicep template to Azure'
             inputs:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: |
-                az deployment group create  `
-                --template-file $(Build.SourcesDirectory)/$(templateFile) `
-                --parameters $(Build.SourcesDirectory)/$(templateParams) `
-                --resource-group $(ResourceGroupName) `
-                --parameters resourcePrefix=$(resourceprefix)
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'

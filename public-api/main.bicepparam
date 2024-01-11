@@ -52,7 +52,7 @@ param dbAdministratorLoginName = 'PostgreSQLAdmin'
 @description('Database : administrator password')
 @minLength(8)
 @secure()
-param dbAdministratorLoginPassword = ''
+param dbAdministratorLoginPassword = 'postgreSQLAdmin Password'
 
 @description('Database : Azure Database for PostgreSQL sku name ')
 @allowed([

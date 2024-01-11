@@ -1,0 +1,43 @@
+# Docker 
+# Build and push and image to the container registry
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - dev
+  paths:
+    include:
+    - infrastructure/app/*
+pr: none
+
+variables:
+  vmImageName: 'ubuntu-latest'
+  dockerRegistryServiceConnection: '<SERVICE_CONNECTION_NAME>'
+  imageRepository: '<IMAGE_NAME>'
+  dockerfilePath: '$(Build.SourcesDirectory)/app/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build and publish stage
+  jobs:
+  - job: Build
+    displayName: Build Docker Image
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DockerInstaller@0
+      inputs:
+        dockerVersion: '17.09.0-ce'
+
+    - task: Docker@2
+      displayName: Build and publish image to Azure Container Registry
+      inputs:
+        command: buildAndPush
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        tags: |
+          $(tag)
