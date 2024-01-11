@@ -136,7 +136,7 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
 
-- stage: Deploy_Pre-Prod
+- stage: Deploy_PreProd
   displayName: 'Deploy to Pre-Prod'
   condition: and(succeeded(), eq(variables.isMain, 'true'))
   dependsOn: Build
