@@ -90,7 +90,14 @@ stages:
           steps:
           #### Task DEPLOY INFRASTRUCTURE ########
           - download: none
-          - checkout: self
+          - checkout: none
+          - task: CmdLine@2
+            displayName: List files2
+            inputs:
+              script: |
+                echo "Structure of work folder of this pipeline:"
+                tree $(Pipeline.Workspace)
+                tree $(System.DefaultWorkingDirectory)
           - task: AzureCLI@2
             displayName: 'Deploy bicep template'
             inputs:
