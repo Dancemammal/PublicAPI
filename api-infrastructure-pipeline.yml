@@ -36,7 +36,7 @@ stages:
     ####### Check Infrastructure ########
     - checkout: self
     - task: CmdLine@2
-      displayName: List files2
+      displayName: List source files
       inputs:
         script: |
           echo "Structure of work folder of this pipeline:"
@@ -64,7 +64,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'  
         scriptLocation: 'inlineScript'  
-        inlineScript: 'az bicep build --file $(templateFile)'  
+        inlineScript: 'az bicep build --file $(System.DefaultWorkingDirectory)$(templateFile)'  
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifact in pipeline'
@@ -92,7 +92,7 @@ stages:
           - download: none
           - checkout: none
           - task: CmdLine@2
-            displayName: List files2
+            displayName: List build source files
             inputs:
               script: |
                 echo "Structure of work folder of this pipeline:"
