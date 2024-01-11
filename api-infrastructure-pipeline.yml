@@ -109,7 +109,7 @@ stages:
 - stage: Deploy_Test
   displayName: 'Deploy to Testing'
   condition: and(succeeded(), eq(variables.isDev, 'true'))
-  dependsOn: Build
+  dependsOn: Deploy_Dev
   jobs:
   - deployment: Deploy
     displayName: 'Deploy Infrastructure'
@@ -169,7 +169,7 @@ stages:
 - stage: Deploy_Prod
   displayName: 'Deploy to Production'
   condition: and(succeeded(), eq(variables.isMain, 'true'))
-  dependsOn: Build
+  dependsOn: Deploy_PreProd
   jobs:
   - deployment: Deploy
     displayName: 'Deploy Infrastructure'
