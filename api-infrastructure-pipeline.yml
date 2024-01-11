@@ -40,7 +40,6 @@ stages:
       inputs:
         script: |
           echo "Structure of work folder of this pipeline:"
-          tree $(Pipeline.Workspace)
           tree $(Build.SourcesDirectory)
 
     - task: AzureCLI@2
@@ -91,14 +90,43 @@ stages:
           steps:
           #### Task DEPLOY INFRASTRUCTURE ########
           - download: none
-          - checkout: none
+          - checkout: self
           - task: CmdLine@2
             displayName: 'List build source files'
             inputs:
               script: |
                 echo "Structure of work folder of this pipeline:"
                 echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
-                tree $(Pipeline.Workspace)
+                tree $(Build.SourcesDirectory)
+          - task: AzureCLI@2
+            displayName: 'Deploy bicep template to Azure'
+            inputs:
+              azureSubscription: $(azureSubscription) 
+              scriptType: 'pscore'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+
+- stage: Deploy_Test
+  displayName: 'Deploy to Testing'
+  condition: and(succeeded(), eq(variables.isDev, 'true'))
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy Infrastructure'
+    environment: 'Test'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          #### Task DEPLOY INFRASTRUCTURE ########
+          - download: none
+          - checkout: self
+          - task: CmdLine@2
+            displayName: 'List build source files'
+            inputs:
+              script: |
+                echo "Structure of work folder of this pipeline:"
+                echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
                 tree $(Build.SourcesDirectory)
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
