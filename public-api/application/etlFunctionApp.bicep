@@ -84,7 +84,7 @@ module appServicePlan '../components/appServicePlan.bicep' = {
 
 //Function App Deployment
 module functionAppModule '../components/appFunction.bicep' = {
-  name: 'funcionAppDeploy-${buildNumber}'
+  name: 'functionAppDeploy-${buildNumber}'
   params: {
     functionAppName: functionAppName
     location: location

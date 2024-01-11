@@ -9,7 +9,7 @@ param location string
 param serverName string = 'metadata'
 
 @description('Database administrator login name')
-@minLength(1)
+@minLength(0)
 param administratorLoginName string
 
 @description('Database administrator password')

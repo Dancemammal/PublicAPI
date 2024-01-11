@@ -66,7 +66,7 @@ param maxReplica int = 3
 param containerRegistryName string = 'eesapiacr'
 
 @description('Specifies the base docker container image to deploy.')
-param containerSeedImage string = 'mcr.microsoft.com/azuredocs/aci-helloworld'
+param containerSeedImage string = 'mcr.microsoft.com/mcr/hello-world'
 
 @description('Select if you want to seed the ACR with a base image.')
 param seedRegistry bool = true
@@ -130,21 +130,6 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   }
 }
 
-//Registry Seeder
-@description('This module seeds the ACR with the public version of the app')
-module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
-  name: ContainerImportName
-  params: {
-    useExistingManagedIdentity: true
-    managedIdentityName: uai.name
-    existingManagedIdentityResourceGroupName: resourceGroup().name
-    existingManagedIdentitySubId: az.subscription().subscriptionId
-    acrName: containerRegistryName
-    location: location
-    images: array(containerSeedImage)
-  }
-}
-
 //Managed Identity
 resource uai 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   name: UserIdentityName
@@ -158,6 +143,21 @@ resource uaiRbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     roleDefinitionId: acrPullRole
     principalId: uai.properties.principalId
     principalType: 'ServicePrincipal'
+  }
+}
+
+//Registry Seeder
+@description('This module seeds the ACR with the public version of the app')
+module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
+  name: ContainerImportName
+  params: {
+    useExistingManagedIdentity: true
+    managedIdentityName: uai.name
+    existingManagedIdentityResourceGroupName: resourceGroup().name
+    existingManagedIdentitySubId: az.subscription().subscriptionId
+    acrName: containerRegistryName
+    location: location
+    images: array(containerSeedImage)
   }
 }
 
