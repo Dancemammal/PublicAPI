@@ -2,11 +2,11 @@
 @description('Base domain name for Public API')
 param domain string = 'publicapi'
 
-@description('Data Hub Subscription Name e.g. s101d01. Used as a prefix for created resources')
+@description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
 param subscription string = 's101d01'
 
-@description('Data Hub Environment Name e.g. api. Used as a prefix for created resources')
-param environment string = 'api'
+@description('Environment Name e.g. dev. Used as a prefix for created resources')
+param environment string = 'dev'
 
 @description('Specifies the location in which the Azure Storage resources should be deployed.')
 param location string = resourceGroup().location
@@ -14,7 +14,7 @@ param location string = resourceGroup().location
 //Tagging Params ------------------------------------------------------------------------
 @description('Tag Value - Enter the Department name tag value e.g. Data Directorate')
 param departmentName string = 'Public API'
-@description('Tag Value - The name of the phase of the development lifecycle environment that the component will be used in e.g. Development / Test / Integration / Production')
+@description('Tag Value - The name of the phase of the development lifecycle environment that the component will be used in e.g. Development / Test / Pre-Production / Production')
 param environmentName string = 'Development'
 @description('Tag Value - Enter the solution name that the component is a part of e.g. EDAP, LDS, EES, API')
 param solutionName string = 'API'
@@ -50,8 +50,8 @@ param fileShareQuota int = 1
 
 //PostgreSQL Database Params -------------------------------------------------------------------
 @description('Database : administrator login name')
-@minLength(1)
-param dbAdministratorLoginName string = 'PostgreSQLAdmin'
+@minLength(0)
+param dbAdministratorLoginName string = ''
 
 @description('Database : administrator password')
 @minLength(8)
