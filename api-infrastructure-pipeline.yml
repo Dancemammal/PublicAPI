@@ -91,7 +91,7 @@ stages:
           steps:
           #### Task DEPLOY INFRASTRUCTURE ########
           - download: none
-          - checkout: none
+          - checkout: self
           - task: CmdLine@2
             displayName: 'List build source files'
             inputs:
