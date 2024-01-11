@@ -102,7 +102,7 @@ var ContainerImportName = '${subscription}importContainerImage'
 //var sanitizedRevisionSuffix = substring(revisionSuffix, 0, 10)
 
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-
+var acrPushRole = resourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec')
 
 //Resources 
 
@@ -137,10 +137,20 @@ resource uai 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-previe
 }
 
 @description('This allows the managed identity of the container app to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
-resource uaiRbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource uaiRbacPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, uai.id, acrPullRole)
   properties: {
     roleDefinitionId: acrPullRole
+    principalId: uai.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+@description('This allows the managed identity of the container app to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
+resource uaiRbacPush 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, uai.id, acrPullRole)
+  properties: {
+    roleDefinitionId: acrPushRole
     principalId: uai.properties.principalId
     principalType: 'ServicePrincipal'
   }
