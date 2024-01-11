@@ -7,22 +7,22 @@ param environment string
 
 //Specific parameters for the resources
 @description('Virtual Network Address Prefix')
-param vnetAddressPrefix string = '10.0.0.0/16'
+param vnetAddressPrefix string = '10.2.0.0/16'
 
 @description('Admin Subnet Address Prefix')
-param adminSubnetPrefix string = '10.0.0.0/24'
+param adminSubnetPrefix string = '10.2.0.0/24'
 
 @description('Importer Subnet Address Prefix')
-param ImporterSubnetPrefix string = '10.0.1.0/24'
+param ImporterSubnetPrefix string = '10.2.1.0/24'
 
 @description('Publisher Subnet Address Prefix')
-param publisherSubnetPrefix string = '10.0.2.0/24'
+param publisherSubnetPrefix string = '10.2.2.0/24'
 
 @description('Content Subnet Address Prefix')
-param contentSubnetPrefix string = '10.0.3.0/24'
+param contentSubnetPrefix string = '10.2.3.0/24'
 
 @description('DataBase Subnet Address Prefix')
-param databaseSubnetPrefix string = '10.0.4.0/24'
+param databaseSubnetPrefix string = '10.2.4.0/24'
 
 //Passed in Tags
 param departmentName string = 'Public API'

@@ -13,7 +13,10 @@ trigger:
 pr: none
 
 variables:
+  isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   vmImageName: 'ubuntu-latest'
+  azureSubscription: 'AzureConnection'
   dockerRegistryServiceConnection: '<SERVICE_CONNECTION_NAME>'
   imageRepository: '<IMAGE_NAME>'
   dockerfilePath: '$(Build.SourcesDirectory)/app/Dockerfile'
@@ -39,5 +42,4 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        tags: |
-          $(tag)
+        tags: $(tag)
