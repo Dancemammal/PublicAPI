@@ -37,12 +37,12 @@ stages:
     - checkout: self
     - task: CmdLine@2
       displayName: List source files
-
       inputs:
         script: |
           echo "Structure of work folder of this pipeline:"
           tree $(Pipeline.Workspace)
           tree $(Build.SourcesDirectory)
+
     - task: AzureCLI@2
       inputs:
         azureSubscription: $(azureSubscription) 
@@ -56,23 +56,22 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-
         inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
         
     - task: AzureCLI@2  
-      displayName: 'Build bicep artifact' 
+      displayName: 'Build bicep artifact for testing' 
       inputs:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'  
         scriptLocation: 'inlineScript'  
-
         inlineScript: 'az bicep build --file $(Build.SourcesDirectory)$(templateFile)'  
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifact in pipeline'
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)'  
-
+        ArtifactName: 'finishedTemplate'  
+        publishLocation: 'Container' 
 
 # Begin Deployment Stage
 # Environments Dev, Test, Pre-prod and Prod
@@ -100,7 +99,6 @@ stages:
                 echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
                 tree $(Pipeline.Workspace)
                 tree $(Build.SourcesDirectory)
-
           - task: AzureCLI@2
             displayName: 'Deploy bicep template'
             inputs:
@@ -108,4 +106,3 @@ stages:
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
               inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
-
