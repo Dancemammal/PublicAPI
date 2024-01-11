@@ -200,7 +200,7 @@ module blobStoreModule 'components/fileShares.bicep' = {
 
 
 //Deploy Key Vault
-module keyVaultModule 'components/keyvault.bicep' = {
+module keyVaultModule 'components/keyVault.bicep' = {
   name: 'keyVaultDeploy'
   params: {
     subscription: subscription
