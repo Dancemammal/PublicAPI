@@ -41,7 +41,7 @@ param deploymentScript string = 'N/A'
 
 
 // Variables and created data
-var keyVaultName = '${subscription}-kv-${environment}-01'
+var keyVaultName = '${subscription}-kv-${environment}-api'
 
 //Resources
 resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
@@ -52,7 +52,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
     enabledForDiskEncryption: enabledForDiskEncryption
     enabledForTemplateDeployment: enabledForTemplateDeployment
     tenantId: tenantId
-    enableSoftDelete: true
+    enableSoftDelete: false
     softDeleteRetentionInDays: 90
     accessPolicies: []
     sku: {
