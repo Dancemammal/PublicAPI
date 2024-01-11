@@ -52,8 +52,8 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
     enabledForDiskEncryption: enabledForDiskEncryption
     enabledForTemplateDeployment: enabledForTemplateDeployment
     tenantId: tenantId
-    enableSoftDelete: false
-    softDeleteRetentionInDays: 90
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 1
     accessPolicies: []
     sku: {
       name: skuName
