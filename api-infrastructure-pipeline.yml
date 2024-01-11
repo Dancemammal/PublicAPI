@@ -41,7 +41,7 @@ stages:
         script: |
           echo "Structure of work folder of this pipeline:"
           tree $(Pipeline.Workspace)
-          tree $(System.DefaultWorkingDirectory)
+          tree $(Build.SourcesDirectory)
 
     - task: AzureCLI@2
       inputs:
@@ -56,7 +56,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(System.DefaultWorkingDirectory)$(templateFile) --parameters $(System.DefaultWorkingDirectory)$(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
         
     - task: AzureCLI@2  
       displayName: 'Build bicep artifact' 
@@ -64,12 +64,12 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'  
         scriptLocation: 'inlineScript'  
-        inlineScript: 'az bicep build --file $(System.DefaultWorkingDirectory)$(templateFile)'  
+        inlineScript: 'az bicep build --file $(Build.SourcesDirectory)$(templateFile)'  
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifact in pipeline'
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/main.json'  
+        PathtoPublish: '$(Build.SourcesDirectory)'  
         ArtifactName: 'finishedTemplate'  
         publishLocation: 'Container' 
 
@@ -96,13 +96,13 @@ stages:
             inputs:
               script: |
                 echo "Structure of work folder of this pipeline:"
-                echo "Main File = $(System.DefaultWorkingDirectory)$(templateFile)"
+                echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
                 tree $(Pipeline.Workspace)
-                tree $(System.DefaultWorkingDirectory)
+                tree $(Build.SourcesDirectory)
           - task: AzureCLI@2
             displayName: 'Deploy bicep template'
             inputs:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(System.DefaultWorkingDirectory)$(templateFile) --parameters $(System.DefaultWorkingDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
