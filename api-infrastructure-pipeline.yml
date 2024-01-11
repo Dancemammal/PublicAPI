@@ -82,7 +82,7 @@ stages:
   dependsOn: Build
   jobs:
   - deployment: Deploy
-    displayName: 'Deploy Infrastructure'
+    displayName: 'Deploy Dev Infrastructure'
     environment: 'Dev'
     strategy:
       runOnce:
@@ -112,7 +112,7 @@ stages:
   dependsOn: Deploy_Dev
   jobs:
   - deployment: Deploy
-    displayName: 'Deploy Infrastructure'
+    displayName: 'Deploy Testing Infrastructure'
     environment: 'Test'
     strategy:
       runOnce:
@@ -142,7 +142,7 @@ stages:
   dependsOn: Build
   jobs:
   - deployment: Deploy
-    displayName: 'Deploy Infrastructure'
+    displayName: 'Deploy Pre Prod Infrastructure'
     environment: 'Pre-prod'
     strategy:
       runOnce:
@@ -172,7 +172,7 @@ stages:
   dependsOn: Deploy_PreProd
   jobs:
   - deployment: Deploy
-    displayName: 'Deploy Infrastructure'
+    displayName: 'Deploy Production Infrastructure'
     environment: 'Prod'
     strategy:
       runOnce:
