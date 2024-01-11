@@ -41,7 +41,7 @@ param deploymentScript string = 'N/A'
 
 
 // Variables and created data
-var keyVaultName = '${subscription}-kv-${environment}-api'
+var keyVaultName = '${subscription}-kv-${environment}-api1'
 
 //Resources
 resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
