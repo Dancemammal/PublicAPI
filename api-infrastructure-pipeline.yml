@@ -96,6 +96,7 @@ stages:
             inputs:
               script: |
                 echo "Structure of work folder of this pipeline:"
+                echo "Main File = $(System.DefaultWorkingDirectory)$(templateFile)"
                 tree $(Pipeline.Workspace)
                 tree $(System.DefaultWorkingDirectory)
           - task: AzureCLI@2
