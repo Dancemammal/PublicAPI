@@ -99,7 +99,7 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az deployment group create  `
-                --template-file $(Build.SourcesDirectory)/$(templateFile) `
-                --parameters $(Build.SourcesDirectory)/$(templateParams) `
+                --template-file $(System.DefaultWorkingDirectory)$(templateFile) `
+                --parameters $(System.DefaultWorkingDirectory)$(templateParams) `
                 --resource-group $(ResourceGroupName) `
                 --parameters resourcePrefix=$(resourceprefix)
