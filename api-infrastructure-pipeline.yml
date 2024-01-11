@@ -97,9 +97,4 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: |
-                az deployment group create  `
-                --template-file $(System.DefaultWorkingDirectory)$(templateFile) `
-                --parameters $(System.DefaultWorkingDirectory)$(templateParams) `
-                --resource-group $(ResourceGroupName) `
-                --parameters resourcePrefix=$(resourceprefix)
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(System.DefaultWorkingDirectory)$(templateFile) --parameters $(System.DefaultWorkingDirectory)$(templateParams)'
