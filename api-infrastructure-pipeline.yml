@@ -85,26 +85,25 @@ stages:
     displayName: 'Deploy Dev Infrastructure'
     environment: 'Dev'
     strategy:
-      runOnce:
-        deploy:
-          steps:
-          #### Task DEPLOY INFRASTRUCTURE ########
-          - download: none
-          - checkout: self
-          - task: CmdLine@2
-            displayName: 'List build source files'
-            inputs:
-              script: |
-                echo "Structure of work folder of this pipeline:"
-                echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
-                tree $(Build.SourcesDirectory)
-          - task: AzureCLI@2
-            displayName: 'Deploy bicep template to Azure'
-            inputs:
-              azureSubscription: $(azureSubscription) 
-              scriptType: 'pscore'
-              scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+      deploy:
+        steps:
+        #### Task DEPLOY INFRASTRUCTURE ########
+        - download: none
+        - checkout: self
+        - task: CmdLine@2
+          displayName: 'List build source files'
+          inputs:
+            script: |
+              echo "Structure of work folder of this pipeline:"
+              echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
+              tree $(Build.SourcesDirectory)
+        - task: AzureCLI@2
+          displayName: 'Deploy bicep template to Azure'
+          inputs:
+            azureSubscription: $(azureSubscription) 
+            scriptType: 'pscore'
+            scriptLocation: 'inlineScript'
+            inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
 
 - stage: Deploy_Test
   displayName: 'Deploy to Testing'
