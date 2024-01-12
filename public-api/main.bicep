@@ -270,6 +270,18 @@ module containerRegistryModule 'components/containerRegistry.bicep' = {
   }
 }
 
+//Seed Container Registry 
+module seedRegistryModule 'components/acrSeeder.bicep' = {
+  name: 'acrSeeder'
+  params: {
+    subscription: subscription
+    location: location
+    containerRegistryName: containerRegistryModule.outputs.crName
+    containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
+    seedRegistry: seedRegistry
+  }
+}
+
 //Deploy Container Application
 module containerAppModule 'components/containerApp.bicep' = {
   name: 'appContainerDeploy'

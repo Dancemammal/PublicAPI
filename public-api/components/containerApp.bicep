@@ -96,13 +96,12 @@ var containerImageName = '${acrLoginServer}/${acrHostedImageName}'
 var ContainerAppName = '${subscription}-app-${containerAppName}'
 var UserIdentityName = '${subscription}-id-${containerAppName}'
 var ContainerLogName = '${subscription}-log-${containerAppLogAnalyticsName}'
-var ContainerImportName = '${subscription}importContainerImage'
+//var ContainerImportName = '${subscription}importContainerImage'
 
 //var revisionSuffix = uniqueString(containerImage, containerAppName)
 //var sanitizedRevisionSuffix = substring(revisionSuffix, 0, 10)
 
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-var acrPushRole = resourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec')
 
 //Resources 
 
@@ -146,30 +145,20 @@ resource uaiRbacPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-@description('This allows the managed identity of the container app to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
-resource uaiRbacPush 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, uai.id, acrPullRole)
-  properties: {
-    roleDefinitionId: acrPushRole
-    principalId: uai.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 //Registry Seeder
-@description('This module seeds the ACR with the public version of the app')
-module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
-  name: ContainerImportName
-  params: {
-    useExistingManagedIdentity: true
-    managedIdentityName: uai.name
-    existingManagedIdentityResourceGroupName: resourceGroup().name
-    existingManagedIdentitySubId: az.subscription().subscriptionId
-    acrName: containerRegistryName
-    location: location
-    images: array(containerSeedImage)
-  }
-}
+// @description('This module seeds the ACR with the public version of the app')
+// module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
+//   name: ContainerImportName
+//   params: {
+//     useExistingManagedIdentity: true
+//     managedIdentityName: uai.name
+//     existingManagedIdentityResourceGroupName: resourceGroup().name
+//     existingManagedIdentitySubId: az.subscription().subscriptionId
+//     acrName: containerRegistryName
+//     location: location
+//     images: array(containerSeedImage)
+//   }
+// }
 
 //Container environment
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
@@ -287,7 +276,6 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
     DeploymentScript: deploymentScript
   }
 }
-
 
 
 // Outputs for exported use
