@@ -6,7 +6,7 @@ param domain string = 'publicapi'
 param subscription string = 's101d01'
 
 @description('Environment Name e.g. dev. Used as a prefix for created resources')
-param environment string = 'dev'
+param environment string = 'eespublicapi'
 
 @description('Specifies the location in which the Azure Storage resources should be deployed.')
 param location string = resourceGroup().location

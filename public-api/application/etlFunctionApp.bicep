@@ -70,7 +70,6 @@ module applicationInsightsModule '../components/appInsights.bicep' = {
   }
 }
 
-
 //App Service Plan Deployment
 module appServicePlan '../components/appServicePlan.bicep' = {
   name: 'servicePlanDeploy-${buildNumber}'
@@ -80,7 +79,6 @@ module appServicePlan '../components/appServicePlan.bicep' = {
     os: appServiceplanOS
   }
 }
-
 
 //Function App Deployment
 module functionAppModule '../components/appFunction.bicep' = {
@@ -107,7 +105,6 @@ module functionAppModule '../components/appFunction.bicep' = {
   ]
 }
 
-
 //Key Vault Access Policy Deployment
 module keyVaultAccessPolicy '../components/keyVaultAccessPolicy.bicep' = {
   name: 'keyVaultAccessPolicyDeploy-${buildNumber}'
@@ -120,7 +117,6 @@ module keyVaultAccessPolicy '../components/keyVaultAccessPolicy.bicep' = {
     functionAppModule
   ]
 }
-
 
 //Function App Settings Deployment
 module functionAppSettingsModule '../components/appFunctionSettings.bicep' = {
@@ -137,4 +133,3 @@ module functionAppSettingsModule '../components/appFunctionSettings.bicep' = {
     functionAppModule
   ]
 }
-

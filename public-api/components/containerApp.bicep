@@ -9,7 +9,7 @@ param location string
 param acrLoginServer string
 
 @description('Specifies the container image to deploy from the registry.')
-param acrHostedImageName string = 'containerapps-helloworld'
+param acrHostedImageName string = 'azuredocs/aci-helloworld:latest'
 
 @minLength(2)
 @maxLength(32)
@@ -60,17 +60,6 @@ param minReplica int = 1
 @maxValue(25)
 param maxReplica int = 3
 
-@minLength(5)
-@maxLength(50)
-@description('Name of the azure container registry (must be globally unique)')
-param containerRegistryName string = 'eesapiacr'
-
-@description('Specifies the base docker container image to deploy.')
-param containerSeedImage string = 'mcr.microsoft.com/mcr/hello-world'
-
-@description('Select if you want to seed the ACR with a base image.')
-param seedRegistry bool = true
-
 @description('Database Connection String')
 param databaseConnectionString string
 
@@ -92,14 +81,10 @@ param deploymentScript string = 'N/A'
 
 //Variables 
 var ContainerEnvName = '${subscription}-env-${containerAppEnvName}'
-var containerImageName = '${acrLoginServer}/${acrHostedImageName}'
+var containerImageName = '${acrLoginServer}/${acrHostedImageName}' 
 var ContainerAppName = '${subscription}-app-${containerAppName}'
 var UserIdentityName = '${subscription}-id-${containerAppName}'
 var ContainerLogName = '${subscription}-log-${containerAppLogAnalyticsName}'
-//var ContainerImportName = '${subscription}importContainerImage'
-
-//var revisionSuffix = uniqueString(containerImage, containerAppName)
-//var sanitizedRevisionSuffix = substring(revisionSuffix, 0, 10)
 
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
@@ -144,21 +129,6 @@ resource uaiRbacPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     principalType: 'ServicePrincipal'
   }
 }
-
-//Registry Seeder
-// @description('This module seeds the ACR with the public version of the app')
-// module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
-//   name: ContainerImportName
-//   params: {
-//     useExistingManagedIdentity: true
-//     managedIdentityName: uai.name
-//     existingManagedIdentityResourceGroupName: resourceGroup().name
-//     existingManagedIdentitySubId: az.subscription().subscriptionId
-//     acrName: containerRegistryName
-//     location: location
-//     images: array(containerSeedImage)
-//   }
-// }
 
 //Container environment
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
