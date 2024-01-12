@@ -280,6 +280,10 @@ module seedRegistryModule 'components/acrSeeder.bicep' = {
     containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
     seedRegistry: seedRegistry
   }
+  dependsOn: [
+    containerRegistryModule
+    keyVaultModule
+  ]
 }
 
 //Deploy Container Application
