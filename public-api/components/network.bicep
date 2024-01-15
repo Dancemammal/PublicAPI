@@ -1,7 +1,9 @@
 @description('Specifies the Subscription to be used.')
 param subscription string
+
 @description('Specifies the location for all resources.')
 param location string
+
 @description('Specifies the Environment for all resources.')
 param environment string
 
@@ -25,16 +27,8 @@ param contentSubnetPrefix string = '10.2.3.0/24'
 param databaseSubnetPrefix string = '10.2.4.0/24'
 
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
+param tagValues object
+
 param deploySubnets bool = true
 
 // Variables and created data
@@ -56,19 +50,7 @@ resource virtualnetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = if (dep
       ]
     }
   }
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'Virtual Networking'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 resource adminsubnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' = if (deploySubnets) {

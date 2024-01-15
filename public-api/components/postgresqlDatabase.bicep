@@ -54,16 +54,7 @@ param geoRedundantBackup string = 'Disabled'
 param KeyVaultName string
 
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
+param tagValues object
 
 // Variables and created data
 var metadataDatabaseName = '${subscription}-postgre-${serverName}'
@@ -99,19 +90,7 @@ resource metadataDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-03-01-
       mode: 'Disabled'
     }
   }
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'PostgreSQL Database'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 

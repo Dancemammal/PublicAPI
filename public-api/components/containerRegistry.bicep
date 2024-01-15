@@ -17,19 +17,8 @@ param containerRegistryName string = 'eesapiacr'
 @description('Tier of your Azure Container Registry.')
 param containerRegistrySku string = 'Basic'
 
-
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
-
+param tagValues object
 
 //Variables
 var ContainerRegistryName = '${subscription}${containerRegistryName}'
@@ -51,19 +40,7 @@ resource apiContainerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01
       }
     }
   }
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'Container registry'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 
