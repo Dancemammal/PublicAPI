@@ -23,6 +23,8 @@ variables:
   azureSubscription: 'AzureConnection'
   templateFile: '/public-api/main.bicep'
   devtemplateParams: '/public-api/parameters/main-dev.bicepparam'
+  testtemplateParams: '/public-api/parameters/main-test.bicepparam'
+  preprodtemplateParams: '/public-api/parameters/main-preprod.bicepparam'
   prodtemplateParams: '/public-api/parameters/main-prod.bicepparam'
 
 pool:
@@ -134,7 +136,7 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(testtemplateParams)'
 
 - stage: Deploy_PreProd
   displayName: 'Deploy to Pre-Prod'
@@ -164,7 +166,7 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(prodtemplateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(preprodtemplateParams)'
 
 - stage: Deploy_Prod
   displayName: 'Deploy to Production'
