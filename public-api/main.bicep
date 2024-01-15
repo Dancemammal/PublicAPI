@@ -2,35 +2,30 @@
 @description('Base domain name for Public API')
 param domain string = 'publicapi'
 
-@description('Data Hub Subscription Name e.g. s101d01. Used as a prefix for created resources')
+@description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
 param subscription string = 's101d01'
 
-@description('Data Hub Environment Name e.g. api. Used as a prefix for created resources')
-param environment string = 'api'
+@description('Environment Name e.g. dev. Used as a prefix for created resources')
+param environment string = 'eespublicapi'
 
 @description('Specifies the location in which the Azure Storage resources should be deployed.')
 param location string = resourceGroup().location
 
 //Tagging Params ------------------------------------------------------------------------
-@description('Tag Value - Enter the Department name tag value e.g. Data Directorate')
-param departmentName string = 'Public API'
-@description('Tag Value - The name of the phase of the development lifecycle environment that the component will be used in e.g. Development / Test / Integration / Production')
 param environmentName string = 'Development'
-@description('Tag Value - Enter the solution name that the component is a part of e.g. EDAP, LDS, EES, API')
-param solutionName string = 'API'
-@description('Tag Value - Enter the full name of the Azure subscription where this resource is located e.g. s101-datahub-development / s101-datahub-test / s101-datahub-production')
-param subscriptionName string = 'Unknown'
-@description('Tag Value - Enter the cost centre identifying value provided by the Service Owner. Otherwise populate with Unknown.')
-param costCentre string = 'Unknown'
-@description('Tag Value - Enter the name of the Service or Application Owner in the SURNAME, Firstname format e.g. SINCLAIR, Paul / SHELBY, Laura')
-param serviceOwnerName string = 'Unknown'
-@description('Tag Value - Enter the date that the component was created using the YYYYMMDD format e.g. 20190417. Use of the utcNow function will automatically populate this entry at creation time. Note: This only works when forced as a default value.')
-param dateProvisioned string = utcNow('u')
-@description('Tag Value - Enter the name of the user who created these resources in the SURNAME, Firstname format e.g. FISHER, Paul')
-param createdBy string = 'Unknown'
-@description('Tag Value - Enter the name of the repo that the deployment script for the component name be found. If the component is deployed manually, the value should be N/A')
-param deploymentRepo string = 'N/A'
 
+param tagValues object = {
+  departmentName: 'Public API'
+  environmentName: environmentName
+  solutionName: 'API'
+  subscriptionName: 'Unknown'
+  costCentre: 'Unknown'
+  serviceOwnerName: 'Unknown'
+  dateProvisioned: utcNow('u')
+  createdBy: 'Unknown'
+  deploymentRepo: 'N/A'
+  deploymentScript: 'main.bicep'
+}
 
 //Networking Params --------------------------------------------------------------------------
 @description('Networking : Deploy subnets for networking')
@@ -50,8 +45,8 @@ param fileShareQuota int = 1
 
 //PostgreSQL Database Params -------------------------------------------------------------------
 @description('Database : administrator login name')
-@minLength(1)
-param dbAdministratorLoginName string = 'PostgreSQLAdmin'
+@minLength(0)
+param dbAdministratorLoginName string = ''
 
 @description('Database : administrator password')
 @minLength(8)
@@ -80,7 +75,7 @@ param containerRegistryName string = 'eesapiacr'
 
 //Container App Params
 @description('Container App : Specifies the container image to deploy from the registry <name>:<tag>.')
-param acrHostedImageName string = 'hello-world'
+param acrHostedImageName string = 'aci-helloworld'
 
 @description('Specifies the container port.')
 param targetPort int = 80
@@ -93,30 +88,15 @@ param seedRegistry bool = true
 
 //ServiceBus Queue Params -------------------------------------------------------------------
 @description('Name of the Service Bus namespace')
-param namespaceName string = 'etlnamespace'
+param namespaceName string = 'processornamespace'
 
 @description('Name of the Queue')
-param queueName string = 'etlfunctionqueue'
+param queueName string = 'Processorfunctionqueue'
 
 //ETL Function Paramenters ------------------------------------------------------------------
-@description('Application : Insights name')
-param applicationInsightsName string = 'etlFunctionInsights'
+@description('Specifies the name of the function.')
+param functionAppName string = 'processor'
 
-@description('Function App Plan operating system')
-@allowed([
-  'Windows'
-  'Linux'
-])
-param appServiceplanOS string = 'Linux'
-
-@description('Function App : Runtime Language')
-@allowed([
-  'dotnet'
-  'node'
-  'python'
-  'java'
-])
-param functionAppRuntime string = 'dotnet'
 
 //---------------------------------------------------------------------------------------------------------------
 // All resources via modules
@@ -130,17 +110,7 @@ module vnetModule 'components/network.bicep' = {
     location: location
     environment: environment
     deploySubnets: deploySubnets
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'network.bicep'
+    tagValues: tagValues
   }
 }
 
@@ -154,17 +124,7 @@ module storageAccountModule 'components/storageAccount.bicep' = {
     importerSubnetRef: vnetModule.outputs.importerSubnetRef
     publisherSubnetRef: vnetModule.outputs.publisherSubnetRef
     storageFirewallRules: storageFirewallRules
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'storageaccount.bicep'
+    tagValues: tagValues
   }
   dependsOn: [
     vnetModule
@@ -205,17 +165,7 @@ module keyVaultModule 'components/keyVault.bicep' = {
     location: location
     environment: environment
     tenantId: az.subscription().tenantId
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'keyvault.bicep'
+    tagValues: tagValues
   }
 }
 
@@ -231,17 +181,7 @@ module databaseModule 'components/postgresqlDatabase.bicep' = {
     storageSizeGB: storageSizeGB
     autoGrowStatus: autoGrowStatus
     KeyVaultName: keyVaultModule.outputs.keyVaultName
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'database.bicep'
+    tagValues: tagValues
   }
   dependsOn: [
     vnetModule
@@ -256,18 +196,24 @@ module containerRegistryModule 'components/containerRegistry.bicep' = {
     subscription: subscription
     location: location
     containerRegistryName: containerRegistryName
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'containerRegistry.bicep'
+    tagValues: tagValues
   }
+}
+
+//Seed Container Registry 
+module seedRegistryModule 'components/acrSeeder.bicep' = {
+  name: 'acrSeeder'
+  params: {
+    subscription: subscription
+    location: location
+    containerRegistryName: containerRegistryModule.outputs.crName
+    containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
+    seedRegistry: seedRegistry
+  }
+  dependsOn: [
+    containerRegistryModule
+    keyVaultModule
+  ]
 }
 
 //Deploy Container Application
@@ -277,24 +223,11 @@ module containerAppModule 'components/containerApp.bicep' = {
     subscription: subscription
     location: location
     acrLoginServer: containerRegistryModule.outputs.crLoginServer
-    acrHostedImageName: acrHostedImageName //image name plus tag i.e. 'azuredocs/aci-helloworld:Latest'
+    acrHostedImageName: acrHostedImageName //image name plus tag i.e. 'azuredocs/aci-helloworld'
     targetPort: targetPort
-    containerRegistryName: containerRegistryModule.outputs.crName
-    containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
-    seedRegistry: seedRegistry
     databaseConnectionString: databaseModule.outputs.adoNetDbConnectionString
     serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.ServiceBusConnectionString
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'containerApp.bicep'
+    tagValues: tagValues
   }
   dependsOn: [
     containerRegistryModule
@@ -310,17 +243,7 @@ module serviceBusFunctionQueueModule 'components/serviceBusQueue.bicep' = {
     location: location
     namespaceName: namespaceName
     queueName:queueName
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'functionQueue.bicep'
+    tagValues: tagValues
   }
 }
 
@@ -330,24 +253,13 @@ module etlFunctionAppModule 'application/etlFunctionApp.bicep' = {
   params: {
     subscription: subscription
     location: location
-    applicationInsightsName: applicationInsightsName
-    appServiceplanOS: appServiceplanOS
-    functionAppRuntime: functionAppRuntime
+    environment: environment
+    functionAppName: functionAppName
     keyVaultName: keyVaultModule.outputs.keyVaultName
     databaseConnectionStringURI: databaseModule.outputs.pythonConnectionStringSecretUri
     storageAccountConnectionString: storageAccountModule.outputs.storageAccountConnectionString
     serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.ServiceBusConnectionString
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: 'etlFunctionApp.bicep'
+    tagValues: tagValues
   }
   dependsOn: [
     serviceBusFunctionQueueModule

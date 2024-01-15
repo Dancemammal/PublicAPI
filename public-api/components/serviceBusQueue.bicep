@@ -6,23 +6,13 @@ param location string
 
 //Specific parameters for the resources
 @description('Name of the Service Bus namespace')
-param namespaceName string = 'etlnamespace'
+param namespaceName string
 
 @description('Name of the Queue')
-param queueName string = 'etlfunctionqueue'
-
+param queueName string
 
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
+param tagValues object
 
 
 // Variables and created data
@@ -42,19 +32,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-01-01-preview
     name: 'Standard'
   }
   properties: {}
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'ServiceBus Namespace'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 //ServiceBus Queue

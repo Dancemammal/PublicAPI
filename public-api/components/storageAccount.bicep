@@ -25,17 +25,7 @@ param storageFirewallRules array = []
 param skuStorageResource string = 'Standard_LRS'
 
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
-
+param tagValues object
 
 // Variables and created data
 var publicAPIStorageAccountName = '${subscription}${storageAccountName}'
@@ -76,19 +66,7 @@ resource publicAPIStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' 
       ]
     }
   }
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'Storage Account'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 //Outputs

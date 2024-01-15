@@ -28,20 +28,10 @@ param enabledForTemplateDeployment bool = false
 param skuName string = 'standard'
 
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
-
+param tagValues object
 
 // Variables and created data
-var keyVaultName = '${subscription}-kv-${environment}-01'
+var keyVaultName = '${subscription}-kv-${environment}-api1'
 
 //Resources
 resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
@@ -53,7 +43,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
     enabledForTemplateDeployment: enabledForTemplateDeployment
     tenantId: tenantId
     enableSoftDelete: true
-    softDeleteRetentionInDays: 90
+    softDeleteRetentionInDays: 7
     accessPolicies: []
     sku: {
       name: skuName
@@ -64,19 +54,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
       bypass: 'AzureServices'
     }
   }
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'KeyVault Service'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 

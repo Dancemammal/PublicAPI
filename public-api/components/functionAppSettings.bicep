@@ -9,7 +9,7 @@ param functionAppName string
   'python'
   'java'
 ])
-param functionAppRuntime string = 'python'
+param functionAppRuntime string = 'dotnet'
 
 @description('Application Insights Instrumentation Key')
 @secure()

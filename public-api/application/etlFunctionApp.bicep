@@ -4,16 +4,16 @@ param subscription string
 @description('Specifies the location for all resources.')
 param location string
 
-//Specific parameters for the resources
-@description('Application : Insights name')
-param applicationInsightsName string
+@description('Specifies the Environment for all resources.')
+param environment string
 
-@description('Function App Plan operating system')
+//Specific parameters for the resources
+@description('Function App Plan : operating system')
 @allowed([
   'Windows'
   'Linux'
 ])
-param appServiceplanOS string = 'Linux'
+param appServicePlanOS string = 'Linux'
 
 @description('Function App : Runtime Language')
 @allowed([
@@ -22,7 +22,10 @@ param appServiceplanOS string = 'Linux'
   'python'
   'java'
 ])
-param functionAppRuntime string = 'python'
+param functionAppRuntime string = 'dotnet'
+
+@description('Specifies the name of the function.')
+param functionAppName string = 'processor'
 
 @description('Specifies the name of the Key Vault.')
 param keyVaultName string
@@ -37,25 +40,14 @@ param storageAccountConnectionString string
 @description('Service Bus Connection String reference')
 param serviceBusConnectionString string
 
-
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
+param tagValues object
 
 
 // Variables and created data
-var buildNumber = uniqueString(resourceGroup().id)
-var functionAppName = '${subscription}-fa-${buildNumber}'
-var appServicePlanName = '${subscription}-apsp-${buildNumber}'
-
+var functionName = '${subscription}-${environment}-fa-${functionAppName}'
+var appServicePlanName = '${subscription}-${environment}-aps-${functionAppName}'
+var applicationInsightsName ='appInsights-${functionAppName}'
 
 //---------------------------------------------------------------------------------------------------------------
 // All resources via modules
@@ -63,43 +55,31 @@ var appServicePlanName = '${subscription}-apsp-${buildNumber}'
 
 //Application Insights Deployment
 module applicationInsightsModule '../components/appInsights.bicep' = {
-  name: 'appInsightsDeploy-${buildNumber}'
+  name: 'appInsightsDeploy-${functionAppName}'
   params: {
     location: location
     appInsightsName: applicationInsightsName
   }
 }
 
-
 //App Service Plan Deployment
 module appServicePlan '../components/appServicePlan.bicep' = {
-  name: 'servicePlanDeploy-${buildNumber}'
+  name: 'servicePlanDeploy-${functionAppName}'
   params: {
     name: appServicePlanName
     location: location
-    os: appServiceplanOS
+    os: appServicePlanOS
   }
 }
 
-
 //Function App Deployment
-module functionAppModule '../components/appFunction.bicep' = {
-  name: 'funcionAppDeploy-${buildNumber}'
+module functionAppModule '../components/functionApp.bicep' = {
+  name: 'functionAppDeploy-${functionAppName}'
   params: {
-    functionAppName: functionAppName
+    functionAppName: functionName
     location: location
     planId: appServicePlan.outputs.servicePlanId
-    //tags
-    departmentName: departmentName
-    environmentName: environmentName
-    solutionName: solutionName
-    subscriptionName: subscriptionName
-    costCentre: costCentre
-    serviceOwnerName: serviceOwnerName
-    dateProvisioned: dateProvisioned
-    createdBy: createdBy
-    deploymentRepo: deploymentRepo
-    deploymentScript: deploymentScript
+    tagValues: tagValues
   }
   dependsOn: [
     applicationInsightsModule
@@ -107,10 +87,9 @@ module functionAppModule '../components/appFunction.bicep' = {
   ]
 }
 
-
 //Key Vault Access Policy Deployment
 module keyVaultAccessPolicy '../components/keyVaultAccessPolicy.bicep' = {
-  name: 'keyVaultAccessPolicyDeploy-${buildNumber}'
+  name: 'keyVaultAccessPolicyDeploy-${functionAppName}'
   params: {
     keyVaultName: keyVaultName
     principalId: functionAppModule.outputs.principalId
@@ -121,10 +100,9 @@ module keyVaultAccessPolicy '../components/keyVaultAccessPolicy.bicep' = {
   ]
 }
 
-
 //Function App Settings Deployment
-module functionAppSettingsModule '../components/appFunctionSettings.bicep' = {
-  name: 'functionConfDeploy-${buildNumber}'
+module functionAppSettingsModule '../components/functionAppSettings.bicep' = {
+  name: 'functionConfDeploy-${functionAppName}'
   params: {
     applicationInsightsKey: applicationInsightsModule.outputs.applicationInsightsKey
     databaseConnectionString: databaseConnectionStringURI
@@ -137,4 +115,3 @@ module functionAppSettingsModule '../components/appFunctionSettings.bicep' = {
     functionAppModule
   ]
 }
-

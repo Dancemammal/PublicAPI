@@ -1,40 +1,34 @@
 @description('Specifies the Subscription to be used.')
 param subscription string
+
 @description('Specifies the location for all resources.')
 param location string
+
 @description('Specifies the Environment for all resources.')
 param environment string
 
 //Specific parameters for the resources
 @description('Virtual Network Address Prefix')
-param vnetAddressPrefix string = '10.0.0.0/16'
+param vnetAddressPrefix string = '10.2.0.0/16'
 
 @description('Admin Subnet Address Prefix')
-param adminSubnetPrefix string = '10.0.0.0/24'
+param adminSubnetPrefix string = '10.2.0.0/24'
 
 @description('Importer Subnet Address Prefix')
-param ImporterSubnetPrefix string = '10.0.1.0/24'
+param ImporterSubnetPrefix string = '10.2.1.0/24'
 
 @description('Publisher Subnet Address Prefix')
-param publisherSubnetPrefix string = '10.0.2.0/24'
+param publisherSubnetPrefix string = '10.2.2.0/24'
 
 @description('Content Subnet Address Prefix')
-param contentSubnetPrefix string = '10.0.3.0/24'
+param contentSubnetPrefix string = '10.2.3.0/24'
 
 @description('DataBase Subnet Address Prefix')
-param databaseSubnetPrefix string = '10.0.4.0/24'
+param databaseSubnetPrefix string = '10.2.4.0/24'
 
 //Passed in Tags
-param departmentName string = 'Public API'
-param environmentName string = 'Development'
-param solutionName string = 'API'
-param subscriptionName string = 'Unknown'
-param costCentre string = 'Unknown'
-param serviceOwnerName string = 'Unknown'
-param dateProvisioned string = utcNow('u')
-param createdBy string = 'Unknown'
-param deploymentRepo string = 'N/A'
-param deploymentScript string = 'N/A'
+param tagValues object
+
 param deploySubnets bool = true
 
 // Variables and created data
@@ -56,19 +50,7 @@ resource virtualnetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = if (dep
       ]
     }
   }
-  tags: {
-    Department: departmentName
-    Solution: solutionName
-    ServiceType: 'Virtual Networking'
-    Environment: environmentName
-    Subscription: subscriptionName
-    CostCentre: costCentre
-    ServiceOwner: serviceOwnerName
-    DateProvisioned: dateProvisioned
-    CreatedBy: createdBy
-    DeploymentRepo: deploymentRepo
-    DeploymentScript: deploymentScript
-  }
+  tags: tagValues
 }
 
 resource adminsubnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' = if (deploySubnets) {

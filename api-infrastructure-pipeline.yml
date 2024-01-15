@@ -22,8 +22,8 @@ variables:
   location: 'uksouth'
   azureSubscription: 'AzureConnection'
   templateFile: '/public-api/main.bicep'
-  templateParams: '/public-api/main.bicepparam'
-
+  devtemplateParams: '/public-api/parameters/main-dev.bicepparam'
+  prodtemplateParams: '/public-api/parameters/main-prod.bicepparam'
 
 pool:
   vmImage: $(vmImageName)
@@ -56,7 +56,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
         
     - task: AzureCLI@2  
       displayName: 'Build bicep artifact for testing' 
@@ -82,7 +82,7 @@ stages:
   dependsOn: Build
   jobs:
   - deployment: Deploy
-    displayName: 'Deploy Infrastructure'
+    displayName: 'Deploy Dev Infrastructure'
     environment: 'Dev'
     strategy:
       runOnce:
@@ -104,15 +104,15 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
 
 - stage: Deploy_Test
   displayName: 'Deploy to Testing'
   condition: and(succeeded(), eq(variables.isDev, 'true'))
-  dependsOn: Build
+  dependsOn: Deploy_Dev
   jobs:
   - deployment: Deploy
-    displayName: 'Deploy Infrastructure'
+    displayName: 'Deploy Testing Infrastructure'
     environment: 'Test'
     strategy:
       runOnce:
@@ -134,4 +134,64 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
+
+- stage: Deploy_PreProd
+  displayName: 'Deploy to Pre-Prod'
+  condition: and(succeeded(), eq(variables.isMain, 'true'))
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy Pre Prod Infrastructure'
+    environment: 'Pre-prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          #### Task DEPLOY INFRASTRUCTURE ########
+          - download: none
+          - checkout: self
+          - task: CmdLine@2
+            displayName: 'List build source files'
+            inputs:
+              script: |
+                echo "Structure of work folder of this pipeline:"
+                echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
+                tree $(Build.SourcesDirectory)
+          - task: AzureCLI@2
+            displayName: 'Deploy bicep template to Azure'
+            inputs:
+              azureSubscription: $(azureSubscription) 
+              scriptType: 'pscore'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(prodtemplateParams)'
+
+- stage: Deploy_Prod
+  displayName: 'Deploy to Production'
+  condition: and(succeeded(), eq(variables.isMain, 'true'))
+  dependsOn: Deploy_PreProd
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy Production Infrastructure'
+    environment: 'Prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          #### Task DEPLOY INFRASTRUCTURE ########
+          - download: none
+          - checkout: self
+          - task: CmdLine@2
+            displayName: 'List build source files'
+            inputs:
+              script: |
+                echo "Structure of work folder of this pipeline:"
+                echo "Main File = $(Build.SourcesDirectory)$(templateFile)"
+                tree $(Build.SourcesDirectory)
+          - task: AzureCLI@2
+            displayName: 'Deploy bicep template to Azure'
+            inputs:
+              azureSubscription: $(azureSubscription) 
+              scriptType: 'pscore'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(prodtemplateParams)'
