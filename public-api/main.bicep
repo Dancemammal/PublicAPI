@@ -75,7 +75,7 @@ param containerRegistryName string = 'eesapiacr'
 
 //Container App Params
 @description('Container App : Specifies the container image to deploy from the registry <name>:<tag>.')
-param acrHostedImageName string = 'hello-world'
+param acrHostedImageName string = 'aci-helloworld'
 
 @description('Specifies the container port.')
 param targetPort int = 80

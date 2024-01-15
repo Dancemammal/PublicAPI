@@ -22,8 +22,8 @@ variables:
   location: 'uksouth'
   azureSubscription: 'AzureConnection'
   templateFile: '/public-api/main.bicep'
-  templateParams: '/public-api/main.bicepparam'
-
+  devtemplateParams: '/public-api/parameters/main-dev.bicepparam'
+  prodtemplateParams: '/public-api/parameters/main-prod.bicepparam'
 
 pool:
   vmImage: $(vmImageName)
@@ -56,7 +56,7 @@ stages:
         azureSubscription: $(azureSubscription) 
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+        inlineScript: 'az deployment group validate --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
         
     - task: AzureCLI@2  
       displayName: 'Build bicep artifact for testing' 
@@ -104,7 +104,7 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
 
 - stage: Deploy_Test
   displayName: 'Deploy to Testing'
@@ -134,7 +134,7 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(devtemplateParams)'
 
 - stage: Deploy_PreProd
   displayName: 'Deploy to Pre-Prod'
@@ -164,7 +164,7 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(prodtemplateParams)'
 
 - stage: Deploy_Prod
   displayName: 'Deploy to Production'
@@ -194,4 +194,4 @@ stages:
               azureSubscription: $(azureSubscription) 
               scriptType: 'pscore'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(templateParams)'
+              inlineScript: 'az deployment group create --resource-group $(resourceGroupName) --template-file $(Build.SourcesDirectory)$(templateFile) --parameters $(Build.SourcesDirectory)$(prodtemplateParams)'

@@ -17,7 +17,7 @@ param storageSizeGB = 32
 param autoGrowStatus = 'Disabled'
 
 //Container App Params
-param acrHostedImageName = 'hello-world'
+param acrHostedImageName = 'aci-helloworld'
 param targetPort = 80
 
 //Container Seed Params
