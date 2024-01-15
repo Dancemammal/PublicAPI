@@ -249,11 +249,11 @@ module containerAppModule 'components/containerApp.bicep' = {
     envParams: [
       {
         name: 'adoDBConnectionString'
-        value: databaseModule.outputs.adoNetDbConnectionString
+        value: databaseModule.outputs.dbConnectionString
       }
       {
         name: 'serviceBusConnectionString'
-        value: serviceBusFunctionQueueModule.outputs.ServiceBusConnectionString
+        value: serviceBusFunctionQueueModule.outputs.serviceBusConnectionString
       }
     ]
     tagValues: tagValues
