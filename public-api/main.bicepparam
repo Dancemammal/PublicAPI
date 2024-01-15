@@ -94,23 +94,4 @@ param namespaceName = 'etlnamespace'
 @description('Name of the Queue')
 param queueName = 'etlfunctionqueue'
 
-//ETL Function Paramenters ------------------------------------------------------------------
-@description('Application : Insights name')
-param applicationInsightsName = 'etlFunctionInsights'
-
-@description('Function App Plan operating system')
-@allowed([
-  'Windows'
-  'Linux'
-])
-param appServiceplanOS = 'Linux'
-
-@description('Function App : Runtime Language')
-@allowed([
-  'dotnet'
-  'node'
-  'python'
-  'java'
-])
-param functionAppRuntime = 'python'
 
