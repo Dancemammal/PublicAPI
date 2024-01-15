@@ -4,7 +4,7 @@ using '../main.bicep'
 param domain = 'publicapi'
 param subscription = 's101d01'
 param environment = 'api'
-param environmentName = 'Production'
+param environmentName = 'Test'
 
 //Networking Params --------------------------------------------------------------------------
 param deploySubnets = true
@@ -17,7 +17,7 @@ param storageSizeGB = 32
 param autoGrowStatus = 'Disabled'
 
 //Container App Params
-param acrHostedImageName = 'aci-helloworld'
+param acrHostedImageName = 'azuredocs/aci-helloworld'
 param targetPort = 80
 
 //Container Seed Params

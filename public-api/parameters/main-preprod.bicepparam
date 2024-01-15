@@ -4,7 +4,7 @@ using '../main.bicep'
 param domain = 'publicapi'
 param subscription = 's101d01'
 param environment = 'api'
-param environmentName = 'Production'
+param environmentName = 'Pre-Prod'
 
 //Networking Params --------------------------------------------------------------------------
 param deploySubnets = true
