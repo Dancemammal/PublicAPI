@@ -9,7 +9,7 @@ param location string
 param acrLoginServer string
 
 @description('Specifies the container image to deploy from the registry.')
-param acrHostedImageName string = 'azuredocs/aci-helloworld:latest'
+param acrHostedImageName string = 'azuredocs/aci-helloworld'
 
 @minLength(2)
 @maxLength(32)
