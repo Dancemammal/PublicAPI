@@ -13,7 +13,7 @@ param seedRegistry bool = true
 param containerRegistryName string = 'eesapiacr'
 
 @description('Specifies the base docker container image to deploy.')
-param containerSeedImage string = 'mcr.microsoft.com/mcr/hello-world'
+param containerSeedImage string = 'mcr.microsoft.com/azuredocs/aci-helloworld'
 
 //Variables 
 var ContainerImportName = '${subscription}importContainerImage'
