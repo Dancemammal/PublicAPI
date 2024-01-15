@@ -1,21 +1,21 @@
 //Environment Params -------------------------------------------------------------------
 @description('Base domain name for Public API')
-param domain string = 'publicapi'
+param domain string
 
 @description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
 param subscription string = 's101d01'
 
-@description('Environment Name e.g. dev. Used as a prefix for created resources')
+@description('Environment Name Used as a prefix for created resources')
 param environment string = 'eespublicapi'
 
-@description('Specifies the location in which the Azure Storage resources should be deployed.')
+@description('Specifies the location in which the Azure resources should be deployed.')
 param location string = resourceGroup().location
 
 //Tagging Params ------------------------------------------------------------------------
 param environmentName string = 'Development'
 
 param tagValues object = {
-  departmentName: 'Public API'
+  departmentName: 'Unknown'
   environmentName: environmentName
   solutionName: 'API'
   subscriptionName: 'Unknown'
@@ -35,6 +35,9 @@ param deploySubnets bool = true
 param storageFirewallRules array = ['0.0.0.0/0']
 
 //Storage Params ------------------------------------------------------------------------------
+@description('Storage Account Name')
+param storageAccountName string = 'core'
+
 @description('Storage : Name of the root fileshare folder name')
 @minLength(3)
 @maxLength(63)
@@ -44,14 +47,17 @@ param fileShareName string = 'data'
 param fileShareQuota int = 1
 
 //PostgreSQL Database Params -------------------------------------------------------------------
+@description('Database : PostgreSQL server Name')
+param postgreSQLserverName string
+
 @description('Database : administrator login name')
 @minLength(0)
-param dbAdministratorLoginName string = ''
+param dbAdminName string
 
 @description('Database : administrator password')
 @minLength(8)
 @secure()
-param dbAdministratorLoginPassword string //P$&RW6*h2V1CKwTm
+param dbAdminPassword string
 
 @description('Database : Azure Database for PostgreSQL sku name ')
 @allowed([
@@ -59,7 +65,7 @@ param dbAdministratorLoginPassword string //P$&RW6*h2V1CKwTm
   'Standard_D4ads_v5'
   'Standard_E4ads_v5'
 ])
-param skuName string = 'Standard_B1ms'
+param dbSkuName string = 'Standard_B1ms'
 
 @description('Database : Azure Database for PostgreSQL Storage Size in GB')
 param storageSizeGB int = 32
@@ -71,17 +77,28 @@ param autoGrowStatus string = 'Disabled'
 @minLength(5)
 @maxLength(50)
 @description('Registry : Name of the azure container registry (must be globally unique)')
-param containerRegistryName string = 'eesapiacr'
+param containerRegistryName string
 
 //Container App Params
+@minLength(2)
+@maxLength(32)
+@description('Specifies the name of the container app.')
+param containerAppName string
+
+@description('Specifies the name of the container app environment.')
+param containerAppEnvName string = 'publicAPI'
+
+@description('Specifies the name of the log analytics workspace.')
+param containerAppLogAnalyticsName string = 'publicAPI'
+
 @description('Container App : Specifies the container image to deploy from the registry <name>:<tag>.')
-param acrHostedImageName string = 'aci-helloworld'
+param acrHostedImageName string
 
 @description('Specifies the container port.')
 param targetPort int = 80
 
 @description('Container App : Specifies the container image to seed to the ACR.')
-param containerSeedImage string = 'mcr.microsoft.com/azuredocs/aci-helloworld'
+param containerSeedImage string
 
 @description('Select if you want to seed the ACR with a base image.')
 param seedRegistry bool = true
@@ -96,7 +113,6 @@ param queueName string = 'Processorfunctionqueue'
 //ETL Function Paramenters ------------------------------------------------------------------
 @description('Specifies the name of the function.')
 param functionAppName string = 'processor'
-
 
 //---------------------------------------------------------------------------------------------------------------
 // All resources via modules
@@ -120,9 +136,8 @@ module storageAccountModule 'components/storageAccount.bicep' = {
   params: {
     subscription: subscription
     location: location
-    adminSubnetRef: vnetModule.outputs.adminSubnetRef
-    importerSubnetRef: vnetModule.outputs.importerSubnetRef
-    publisherSubnetRef: vnetModule.outputs.publisherSubnetRef
+    storageAccountName: storageAccountName
+    storageSubnetRules: [vnetModule.outputs.adminSubnetRef, vnetModule.outputs.importerSubnetRef, vnetModule.outputs.publisherSubnetRef]
     storageFirewallRules: storageFirewallRules
     tagValues: tagValues
   }
@@ -175,12 +190,14 @@ module databaseModule 'components/postgresqlDatabase.bicep' = {
   params: {
     subscription: subscription
     location: location
-    administratorLoginName: dbAdministratorLoginName
-    administratorLoginPassword: dbAdministratorLoginPassword
-    skuName: skuName
+    environment: environment
+    serverName: postgreSQLserverName
+    adminName: dbAdminName
+    adminPassword: dbAdminPassword
+    dbSkuName: dbSkuName
     storageSizeGB: storageSizeGB
     autoGrowStatus: autoGrowStatus
-    KeyVaultName: keyVaultModule.outputs.keyVaultName
+    keyVaultName: keyVaultModule.outputs.keyVaultName
     tagValues: tagValues
   }
   dependsOn: [
@@ -206,7 +223,7 @@ module seedRegistryModule 'components/acrSeeder.bicep' = {
   params: {
     subscription: subscription
     location: location
-    containerRegistryName: containerRegistryModule.outputs.crName
+    containerRegistryName: containerRegistryModule.outputs.containerRegistryName
     containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
     seedRegistry: seedRegistry
   }
@@ -222,17 +239,25 @@ module containerAppModule 'components/containerApp.bicep' = {
   params: {
     subscription: subscription
     location: location
-    acrLoginServer: containerRegistryModule.outputs.crLoginServer
+    environment: environment
+    containerAppName: containerAppName
+    containerAppEnvName: containerAppEnvName
+    containerAppLogAnalyticsName: containerAppLogAnalyticsName
+    acrLoginServer: containerRegistryModule.outputs.containerRegistryLoginServer
     acrHostedImageName: acrHostedImageName //image name plus tag i.e. 'azuredocs/aci-helloworld'
     targetPort: targetPort
-    databaseConnectionString: databaseModule.outputs.adoNetDbConnectionString
-    serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.ServiceBusConnectionString
+    envParams: [
+      {
+        name: 'adoDBConnectionString'
+        value: databaseModule.outputs.adoNetDbConnectionString
+      }
+      {
+        name: 'serviceBusConnectionString'
+        value: serviceBusFunctionQueueModule.outputs.ServiceBusConnectionString
+      }
+    ]
     tagValues: tagValues
   }
-  dependsOn: [
-    containerRegistryModule
-    keyVaultModule
-  ]
 }
 
 //Deploy Service Bus
@@ -256,9 +281,9 @@ module etlFunctionAppModule 'application/etlFunctionApp.bicep' = {
     environment: environment
     functionAppName: functionAppName
     keyVaultName: keyVaultModule.outputs.keyVaultName
-    databaseConnectionStringURI: databaseModule.outputs.pythonConnectionStringSecretUri
+    databaseConnectionStringURI: databaseModule.outputs.connectionStringSecretUri
     storageAccountConnectionString: storageAccountModule.outputs.storageAccountConnectionString
-    serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.ServiceBusConnectionString
+    serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.serviceBusConnectionString
     tagValues: tagValues
   }
   dependsOn: [
@@ -269,6 +294,6 @@ module etlFunctionAppModule 'application/etlFunctionApp.bicep' = {
 
 
 //outputs
-output crLoginServer string = containerRegistryModule.outputs.crLoginServer
-output crName string = containerRegistryModule.name
-output metadataDatabaseRef string = databaseModule.outputs.metadataDatabaseRef
+output containerRegistryLoginServer string = containerRegistryModule.outputs.containerRegistryLoginServer
+output containerRegistryName string = containerRegistryModule.name
+output metadataDatabaseRef string = databaseModule.outputs.databaseRef

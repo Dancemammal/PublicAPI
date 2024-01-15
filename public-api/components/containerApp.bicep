@@ -4,23 +4,26 @@ param subscription string
 @description('Specifies the location for all resources.')
 param location string
 
+@description('Specifies the Environment for all resources.')
+param environment string
+
 //Specific parameters for the resources
 @description('Specifies the login server from the registry.')
 param acrLoginServer string
 
 @description('Specifies the container image to deploy from the registry.')
-param acrHostedImageName string = 'azuredocs/aci-helloworld'
+param acrHostedImageName string
 
 @minLength(2)
 @maxLength(32)
 @description('Specifies the name of the container app.')
-param containerAppName string = uniqueString(resourceGroup().id)
+param containerAppName string
 
 @description('Specifies the name of the container app environment.')
-param containerAppEnvName string = uniqueString(resourceGroup().id)
+param containerAppEnvName string
 
 @description('Specifies the name of the log analytics workspace.')
-param containerAppLogAnalyticsName string = uniqueString(resourceGroup().id)
+param containerAppLogAnalyticsName string
 
 @description('Specifies the container port.')
 param targetPort int = 80
@@ -60,30 +63,27 @@ param minReplica int = 1
 @maxValue(25)
 param maxReplica int = 3
 
-@description('Database Connection String')
-param databaseConnectionString string
-
-@description('Key Vault URI Connection String reference')
-param serviceBusConnectionString string
+@description('Container environment parameters')
+param envParams array = []
 
 //Passed in Tags
 param tagValues object
 
 
 //Variables 
-var ContainerEnvName = '${subscription}-env-${containerAppEnvName}'
 var containerImageName = '${acrLoginServer}/${acrHostedImageName}' 
-var ContainerAppName = '${subscription}-app-${containerAppName}'
-var UserIdentityName = '${subscription}-id-${containerAppName}'
-var ContainerLogName = '${subscription}-log-${containerAppLogAnalyticsName}'
-
+var containerEnvName = '${subscription}-cae-${environment}-${containerAppEnvName}'
+var containerApplicationName = '${subscription}-ca-${environment}-${containerAppName}'
+var userIdentityName = '${subscription}-id-${environment}-${containerAppName}'
+var containerLogName = '${subscription}-log-${environment}-${containerAppLogAnalyticsName}'
+var applicationInsightsName ='${subscription}-ai-${environment}-${containerAppName}'
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 //Resources 
 
 //Log Analytics
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: ContainerLogName
+  name: containerLogName
   location: location
   properties: {
     sku: {
@@ -93,30 +93,40 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   tags: tagValues
 }
 
+//Application Insights Deployment
+module applicationInsightsModule '../components/appInsights.bicep' = {
+  name: 'appInsightsDeploy-${containerAppName}'
+  params: {
+    location: location
+    appInsightsName: applicationInsightsName
+  }
+}
+
 //Managed Identity
-resource uai 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
-  name: UserIdentityName
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
+  name: userIdentityName
   location: location
 }
 
 @description('This allows the managed identity of the container app to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
-resource uaiRbacPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, uai.id, acrPullRole)
+resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentity.id, acrPullRole)
   properties: {
     roleDefinitionId: acrPullRole
-    principalId: uai.properties.principalId
+    principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
 }
 
 //Container environment
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
-  name: ContainerEnvName
+  name: containerEnvName
   location: location
   sku: {
     name: 'Consumption'
   }
   properties: {
+    daprAIInstrumentationKey: applicationInsightsModule.outputs.applicationInsightsKey
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
@@ -130,12 +140,12 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' 
 
 //Container Application
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
-  name: ContainerAppName
+  name: containerApplicationName
   location: location
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${uai.id}': {}
+      '${managedIdentity.id}': {}
     }
   }
   properties: {
@@ -156,7 +166,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
       }
       registries: [
         {
-          identity: uai.id
+          identity: managedIdentity.id
           server: acrLoginServer
         }
       ]
@@ -166,16 +176,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         {
           name: containerAppName 
           image: containerImageName
-          env: [
-            {
-              name: 'adoDBConnectionString'
-              value: databaseConnectionString
-            }
-            {
-              name: 'serviceBusConnectionString'
-              value: serviceBusConnectionString
-            }
-          ]
+          env: envParams
           resources: {
             cpu: json(cpuCore)
             memory: '${memorySize}Gi'

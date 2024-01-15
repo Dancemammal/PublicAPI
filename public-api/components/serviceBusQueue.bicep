@@ -4,6 +4,9 @@ param subscription string
 @description('Specifies the location for all resources.')
 param location string
 
+@description('Environment Name e.g. dev. Used as a prefix for created resources')
+param environment string = 'eespublicapi'
+
 //Specific parameters for the resources
 @description('Name of the Service Bus namespace')
 param namespaceName string
@@ -16,8 +19,8 @@ param tagValues object
 
 
 // Variables and created data
-var serviceBusNamespaceName = '${subscription}-sbns-${namespaceName}'
-var serviceBusQueueName = '${subscription}-sbq-${queueName}'
+var serviceBusNamespaceName = '${subscription}-sbns-${environment}-${namespaceName}'
+var serviceBusQueueName = '${subscription}-sbq-${environment}-${queueName}'
 var serviceBusEndpoint = '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey'
 var serviceBusConnectionString = listKeys(serviceBusEndpoint, serviceBusNamespace.apiVersion).primaryConnectionString
 
@@ -40,9 +43,9 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-prev
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {
-    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
+    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S' //Max time possible to stop messages being auto-deleted
     deadLetteringOnMessageExpiration: false
-    defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S'
+    defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S' //Max time possible to stop messages being auto-deleted
     duplicateDetectionHistoryTimeWindow: 'PT10M'
     enableExpress: false
     enablePartitioning: false
@@ -56,8 +59,8 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-prev
 
 
 //Outputs
-output ServiceBusQueueRef string = serviceBusQueue.id
-output ServiceBusQueueName string = serviceBusQueue.name
-output ServiceBusConnectionString string = serviceBusConnectionString
+output serviceBusQueueRef string = serviceBusQueue.id
+output serviceBusQueueName string = serviceBusQueue.name
+output serviceBusConnectionString string = serviceBusConnectionString
 
 

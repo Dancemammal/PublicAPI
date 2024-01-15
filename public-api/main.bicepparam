@@ -4,10 +4,10 @@ using './main.bicep'
 @description('Base domain name for Public API')
 param domain = 'publicapi'
 
-@description('Data Hub Subscription Name e.g. s101d01. Used as a prefix for created resources')
+@description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
 param subscription = 's101d01'
 
-@description('Data Hub Environment Name e.g. api. Used as a prefix for created resources')
+@description('Environment Name e.g. api. Used as a prefix for created resources')
 param environment = 'api'
 
 //Networking Params --------------------------------------------------------------------------

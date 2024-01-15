@@ -9,22 +9,22 @@ param environment string
 
 //Specific parameters for the resources
 @description('Virtual Network Address Prefix')
-param vnetAddressPrefix string = '10.2.0.0/16'
+param vnetAddressPrefix string = '10.0.0.0/16'
 
 @description('Admin Subnet Address Prefix')
-param adminSubnetPrefix string = '10.2.0.0/24'
+param adminSubnetPrefix string = '10.0.0.0/24'
 
 @description('Importer Subnet Address Prefix')
-param ImporterSubnetPrefix string = '10.2.1.0/24'
+param importerSubnetPrefix string = '10.0.1.0/24'
 
 @description('Publisher Subnet Address Prefix')
-param publisherSubnetPrefix string = '10.2.2.0/24'
+param publisherSubnetPrefix string = '10.0.2.0/24'
 
 @description('Content Subnet Address Prefix')
-param contentSubnetPrefix string = '10.2.3.0/24'
+param contentSubnetPrefix string = '10.0.4.0/24'
 
 @description('DataBase Subnet Address Prefix')
-param databaseSubnetPrefix string = '10.2.4.0/24'
+param databaseSubnetPrefix string = '10.0.5.0/24'
 
 //Passed in Tags
 param tagValues object
@@ -37,7 +37,8 @@ var adminSubnetName = '${subscription}-snet-${environment}-admin'
 var importerSubnetName = '${subscription}-snet-${environment}-importer'
 var publisherSubnetName = '${subscription}-snet-${environment}-publisher'
 var contentSubnetName = '${subscription}-snet-${environment}-content'
-var databaseSubnetName = '${subscription}-snet-${environment}-database'
+var dataSubnetName = '${subscription}-snet-${environment}-data'
+
 
 //Resources 
 resource virtualnetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = if (deploySubnets) {
@@ -70,7 +71,7 @@ resource importersubnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' =
   parent: virtualnetwork
   name: importerSubnetName
   properties: {
-    addressPrefix: ImporterSubnetPrefix
+    addressPrefix: importerSubnetPrefix
     serviceEndpoints: [
       {
         service: 'Microsoft.Storage'
@@ -116,7 +117,7 @@ resource contentsubnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' = 
 
 resource databasesubnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' = if (deploySubnets) {
   parent: virtualnetwork
-  name: databaseSubnetName
+  name: dataSubnetName
   properties: {
     addressPrefix: databaseSubnetPrefix
     serviceEndpoints: [
@@ -144,4 +145,4 @@ output importerSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/
 output publisherSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/subnets', vNetName, publisherSubnetName)
 
 @description('The fully qualified Azure resource ID of the Subnet.')
-output databaseSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/subnets', vNetName, databaseSubnetName)
+output databaseSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/subnets', vNetName, dataSubnetName)

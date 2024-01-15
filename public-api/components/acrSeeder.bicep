@@ -16,24 +16,24 @@ param containerRegistryName string = 'eesapiacr'
 param containerSeedImage string = 'mcr.microsoft.com/azuredocs/aci-helloworld'
 
 //Variables 
-var ContainerImportName = '${subscription}importContainerImage'
-var UserIdentityName = '${subscription}-id-seeder'
+var containerImportName = '${subscription}ImportContainerImage'
+var userIdentityName = '${subscription}-id-seeder'
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 //Resources 
 
 //Managed Identity
-resource uai 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
-  name: UserIdentityName
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
+  name: userIdentityName
   location: location
 }
 
 @description('This allows the managed identity of the seeder to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
-resource uaiRbacPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, uai.id, acrPullRole)
+resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, managedIdentity.id, acrPullRole)
   properties: {
     roleDefinitionId: acrPullRole
-    principalId: uai.properties.principalId
+    principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
 }
@@ -41,10 +41,10 @@ resource uaiRbacPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
 //Registry Seeder
 @description('This module seeds the ACR with the public version of the app')
 module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
-  name: ContainerImportName
+  name: containerImportName
   params: {
     useExistingManagedIdentity: false
-    managedIdentityName: uai.name
+    managedIdentityName: managedIdentity.name
     existingManagedIdentityResourceGroupName: resourceGroup().name
     existingManagedIdentitySubId: az.subscription().subscriptionId
     acrName: containerRegistryName

@@ -31,7 +31,7 @@ param skuName string = 'standard'
 param tagValues object
 
 // Variables and created data
-var keyVaultName = '${subscription}-kv-${environment}-api1'
+var keyVaultName = '${subscription}-kv-${environment}-api'
 
 //Resources
 resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
