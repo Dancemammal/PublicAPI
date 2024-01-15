@@ -10,24 +10,6 @@ param subscription = 's101d01'
 @description('Data Hub Environment Name e.g. api. Used as a prefix for created resources')
 param environment = 'api'
 
-//Tagging Params ------------------------------------------------------------------------
-@description('Tag Value - Enter the Department name tag value e.g. Data Directorate')
-param departmentName = 'Public API'
-@description('Tag Value - The name of the phase of the development lifecycle environment that the component will be used in e.g. Development / Test / Integration / Production')
-param environmentName = 'Development'
-@description('Tag Value - Enter the solution name that the component is a part of e.g. EDAP, LDS, EES, API')
-param solutionName = 'API'
-@description('Tag Value - Enter the full name of the Azure subscription where this resource is located e.g. s101-datahub-development / s101-datahub-test / s101-datahub-production')
-param subscriptionName = 'Unknown'
-@description('Tag Value - Enter the cost centre identifying value provided by the Service Owner. Otherwise populate with Unknown.')
-param costCentre = 'Unknown'
-@description('Tag Value - Enter the name of the Service or Application Owner in the SURNAME, Firstname format e.g. SINCLAIR, Paul / SHELBY, Laura')
-param serviceOwnerName = 'Unknown'
-@description('Tag Value - Enter the name of the user who created these resources in the SURNAME, Firstname format e.g. FISHER, Paul')
-param createdBy = 'Unknown'
-@description('Tag Value - Enter the name of the repo that the deployment script for the component name be found. If the component is deployed manually, the value should be N/A')
-param deploymentRepo = 'N/A'
-
 //Networking Params --------------------------------------------------------------------------
 @description('Networking : Deploy subnets for networking')
 param deploySubnets = true
