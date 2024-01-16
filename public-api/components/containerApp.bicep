@@ -73,7 +73,7 @@ param tagValues object
 //Variables 
 var containerImageName = '${acrLoginServer}/${acrHostedImageName}' 
 var containerEnvName = '${subscription}-cae-${environment}-${containerAppEnvName}'
-var containerApplicationName = '${subscription}-ca-${containerAppName}'
+var containerApplicationName = toLower('${subscription}-ca-${environment}-${containerAppName}')
 var userIdentityName = '${subscription}-id-${environment}-${containerAppName}'
 var containerLogName = '${subscription}-log-${environment}-${containerAppLogAnalyticsName}'
 var applicationInsightsName ='${subscription}-ai-${environment}-${containerAppName}'
