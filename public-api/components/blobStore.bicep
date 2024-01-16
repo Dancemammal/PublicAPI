@@ -17,12 +17,12 @@ param storageAccountName string
 //Resources
 
 // Existsing Storage Account
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
 
 // Blob Services for Storage Account
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2019-06-01' = {
+resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
   name: blobStoreName
   parent: storageAccount
   properties: {

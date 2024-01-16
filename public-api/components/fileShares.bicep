@@ -1,3 +1,6 @@
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
+
 @description('Size in GB of the file share')
 param fileShareQuota int = 6
 
@@ -12,7 +15,7 @@ param fileShareAccessTier string = 'Hot'
 param storageAccountName string
 
 // Variables and created data
-
+var shareName = '${resourcePrefix}-fs-${fileShareName}'
 
 //Resources 
 
@@ -30,7 +33,7 @@ resource fileService 'Microsoft.Storage/storageAccounts/fileServices@2022-09-01'
 
 // FileShare
 resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-09-01' = {
-  name:  fileShareName
+  name:  shareName
   parent: fileService
   properties: {
     accessTier: fileShareAccessTier

@@ -13,7 +13,7 @@ param tenantId string
 
 
 //Resources
-resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2021-11-01-preview' = {
+resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
   name: '${keyVaultName}/add'
   properties: {
     accessPolicies: [

@@ -1,11 +1,8 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
-
-@description('Environment Name e.g. dev. Used as a prefix for created resources')
-param environment string
 
 //Specific parameters for the resources
 @description('Server Name for Azure Database for PostgreSQL')
@@ -60,8 +57,8 @@ param keyVaultName string
 param tagValues object
 
 // Variables and created data
-var databaseName = '${subscription}-psql-${environment}-${serverName}'
-var connectionStringSecretName = '${serverName}-sql-${environment}-connectionString'
+var databaseName = '${resourcePrefix}-psql-${serverName}'
+var connectionStringSecretName = '${resourcePrefix}-sql-${serverName}-connectionString'
 var connectionString = 'Server=${postgreSQLDatabase.name}${az.environment().suffixes.sqlServerHostname};${adminName}Database=<database>;Port=5432;${postgreSQLDatabase.name}User Id=${adminPassword};'
 
 

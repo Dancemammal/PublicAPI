@@ -1,11 +1,8 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
-
-@description('Specifies the Environment for all resources.')
-param environment string
 
 //Specific parameters for the resources
 @description('Specifies the login server from the registry.')
@@ -72,11 +69,11 @@ param tagValues object
 
 //Variables 
 var containerImageName = '${acrLoginServer}/${acrHostedImageName}' 
-var containerEnvName = '${subscription}-cae-${environment}-${containerAppEnvName}'
-var containerApplicationName = toLower('${subscription}-ca-${environment}-${containerAppName}')
-var userIdentityName = '${subscription}-id-${environment}-${containerAppName}'
-var containerLogName = '${subscription}-log-${environment}-${containerAppLogAnalyticsName}'
-var applicationInsightsName ='${subscription}-ai-${environment}-${containerAppName}'
+var containerEnvName = '${resourcePrefix}-cae-${containerAppEnvName}'
+var containerApplicationName = toLower('${resourcePrefix}-ca-${containerAppName}')
+var userIdentityName = '${resourcePrefix}-id-${containerAppName}'
+var containerLogName = '${resourcePrefix}-log-${containerAppLogAnalyticsName}'
+var applicationInsightsName ='${resourcePrefix}-ai-${containerAppName}'
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 //Resources 
@@ -103,7 +100,7 @@ module applicationInsightsModule '../components/appInsights.bicep' = {
 }
 
 //Managed Identity
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: userIdentityName
   location: location
 }
@@ -119,12 +116,9 @@ resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01
 }
 
 //Container environment
-resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
+resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: containerEnvName
   location: location
-  sku: {
-    name: 'Consumption'
-  }
   properties: {
     daprAIInstrumentationKey: applicationInsightsModule.outputs.applicationInsightsKey
     appLogsConfiguration: {

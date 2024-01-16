@@ -1,11 +1,8 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
-
-@description('Specifies the Environment for all resources.')
-param environment string
 
 //Specific parameters for the resources
 @description('Function App : Runtime Language')
@@ -34,7 +31,6 @@ param tagValues object
 // Variables and created data
 
 
-
 //---------------------------------------------------------------------------------------------------------------
 // All resources via modules
 //---------------------------------------------------------------------------------------------------------------
@@ -43,8 +39,7 @@ param tagValues object
 module functionAppModule '../components/functionApp.bicep' = {
   name: 'functionAppDeploy-${functionAppName}'
   params: {
-    subscription: subscription
-    environment: environment
+    resourcePrefix: resourcePrefix
     functionAppName: functionAppName
     location: location
     tagValues: tagValues

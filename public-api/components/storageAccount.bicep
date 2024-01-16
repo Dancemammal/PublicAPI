@@ -1,5 +1,5 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
@@ -31,7 +31,7 @@ param skuStorageResource string = 'Standard_LRS'
 param tagValues object
 
 // Variables and created data
-var storageName = '${subscription}sacc${storageAccountName}'
+var storageName = replace('${resourcePrefix}sacc${storageAccountName}', '-', '')
 var endpointSuffix = environment().suffixes.storage
 var key = storageAccount.listKeys().keys[0].value
 

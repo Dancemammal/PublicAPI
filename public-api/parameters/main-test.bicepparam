@@ -17,8 +17,9 @@ param dbSkuName = 'Standard_B1ms'
 param storageSizeGB = 32
 param autoGrowStatus = 'Disabled'
 
-// Variables and created data
+//Container Registry
 param containerRegistryName = 'eesapiacr'
+param deployRegistry = true
 
 //Container App Params
 param containerAppName = 'publicapi'

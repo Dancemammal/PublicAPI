@@ -1,11 +1,8 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
-
-@description('Specifies the Environment for all resources.')
-param environment string
 
 //Specific parameters for the resources
 @description('Function App name')
@@ -45,10 +42,10 @@ param tagValues object
 // Variables and created data
 var kind = 'functionapp'
 var databaseConnectionStringKeyVaultRef = '@Microsoft.KeyVault(SecretUri=${databaseConnectionString})'
-var appServicePlanName = '${subscription}-aps-${environment}-${functionAppName}'
+var appServicePlanName = '${resourcePrefix}-aps-${functionAppName}'
 var reserved = appServicePlanOS == 'Linux' ? true : false
-var applicationInsightsName ='${subscription}-ai-${environment}-${functionAppName}'
-var functionName = '${subscription}-fa-${environment}-${functionAppName}'
+var applicationInsightsName ='${resourcePrefix}-ai-${functionAppName}'
+var functionName = '${resourcePrefix}-fa-${functionAppName}'
 
 //Resources
 

@@ -1,5 +1,5 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
@@ -17,15 +17,18 @@ param containerRegistryName string
 @description('Tier of your Azure Container Registry.')
 param skuName string = 'Basic'
 
+@description('Deploy the Container Registry')
+param deployRegistry bool
+
 //Passed in Tags
 param tagValues object
 
 //Variables
-var RegistryName = '${subscription}cr${containerRegistryName}'
+var RegistryName = replace('${resourcePrefix}cr${containerRegistryName}', '-', '')
 
 
 //Resources 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = if (deployRegistry) {
   name: RegistryName
   location: location
   sku: {
@@ -44,9 +47,12 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-pr
 }
 
 
+resource currentContainerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
+  name: RegistryName
+}
 
 
 // Outputs for exported use
-output containerRegistryId string = containerRegistry.id
-output containerRegistryName string = containerRegistry.name
-output containerRegistryLoginServer string = containerRegistry.properties.loginServer
+output containerRegistryId string = currentContainerRegistry.id
+output containerRegistryName string = currentContainerRegistry.name
+output containerRegistryLoginServer string = currentContainerRegistry.properties.loginServer

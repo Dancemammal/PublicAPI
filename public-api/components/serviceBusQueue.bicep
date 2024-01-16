@@ -1,11 +1,8 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
-
-@description('Environment Name e.g. dev. Used as a prefix for created resources')
-param environment string
 
 //Specific parameters for the resources
 @description('Name of the Service Bus namespace')
@@ -19,8 +16,8 @@ param tagValues object
 
 
 // Variables and created data
-var serviceBusNamespaceName = '${subscription}-sbns-${environment}-${namespaceName}'
-var serviceBusQueueName = '${subscription}-sbq-${environment}-${queueName}'
+var serviceBusNamespaceName = '${resourcePrefix}-sbns-${namespaceName}'
+var serviceBusQueueName = '${resourcePrefix}-sbq-${queueName}'
 var serviceBusEndpoint = '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey'
 var serviceBusConnectionString = listKeys(serviceBusEndpoint, serviceBusNamespace.apiVersion).primaryConnectionString
 
@@ -28,7 +25,7 @@ var serviceBusConnectionString = listKeys(serviceBusEndpoint, serviceBusNamespac
 //Resources 
 
 //ServiceBus Namespace
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-01-01-preview' = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
   name: serviceBusNamespaceName
   location: location
   sku: {
@@ -39,7 +36,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-01-01-preview
 }
 
 //ServiceBus Queue
-resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
+resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-preview' = {
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {

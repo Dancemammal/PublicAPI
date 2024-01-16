@@ -3,10 +3,10 @@
 param domain string
 
 @description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
-param subscription string = 's101d01'
+param subscription string
 
 @description('Environment Name Used as a prefix for created resources')
-param environment string = 'eespublicapi'
+param environment string 
 
 @description('Specifies the location in which the Azure resources should be deployed.')
 param location string = resourceGroup().location
@@ -79,6 +79,9 @@ param autoGrowStatus string = 'Disabled'
 @description('Registry : Name of the azure container registry (must be globally unique)')
 param containerRegistryName string
 
+@description('Deploy the Container Registry if you are not using an existing registry')
+param deployRegistry bool
+
 //Container App Params
 @minLength(2)
 @maxLength(32)
@@ -114,6 +117,14 @@ param queueName string = 'Processorqueue'
 @description('Specifies the name of the function.')
 param functionAppName string = 'processor'
 
+
+
+//---------------------------------------------------------------------------------------------------------------
+// Variables and created data
+//---------------------------------------------------------------------------------------------------------------
+var resourcePrefix = '${subscription}-${environment}'
+
+
 //---------------------------------------------------------------------------------------------------------------
 // All resources via modules
 //---------------------------------------------------------------------------------------------------------------
@@ -122,9 +133,8 @@ param functionAppName string = 'processor'
 module vnetModule 'components/network.bicep' = {
   name: 'virtualNetworkDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
-    environment: environment
     deploySubnets: deploySubnets
     tagValues: tagValues
   }
@@ -134,7 +144,7 @@ module vnetModule 'components/network.bicep' = {
 module storageAccountModule 'components/storageAccount.bicep' = {
   name: 'storageAccountDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
     storageAccountName: storageAccountName
     storageSubnetRules: [vnetModule.outputs.adminSubnetRef, vnetModule.outputs.importerSubnetRef, vnetModule.outputs.publisherSubnetRef]
@@ -150,10 +160,10 @@ module storageAccountModule 'components/storageAccount.bicep' = {
 module fileShareModule 'components/fileShares.bicep' = {
   name: 'fileShareDeploy'
   params: {
+    resourcePrefix: resourcePrefix
     fileShareName: fileShareName
     fileShareQuota: fileShareQuota
     storageAccountName: storageAccountModule.outputs.storageAccountName
-    //tags
   }
   dependsOn: [
     storageAccountModule
@@ -165,7 +175,6 @@ module blobStoreModule 'components/blobStore.bicep' = {
   name: 'blobStoreDeploy'
   params: {
     storageAccountName: storageAccountModule.outputs.storageAccountName
-    //tags
   }
   dependsOn: [
     storageAccountModule
@@ -176,7 +185,7 @@ module blobStoreModule 'components/blobStore.bicep' = {
 module keyVaultModule 'components/keyVault.bicep' = {
   name: 'keyVaultDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
     environment: environment
     tenantId: az.subscription().tenantId
@@ -188,9 +197,8 @@ module keyVaultModule 'components/keyVault.bicep' = {
 module databaseModule 'components/postgresqlDatabase.bicep' = {
   name: 'postgreSQLDatabaseDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
-    environment: environment
     serverName: postgreSQLserverName
     adminName: dbAdminName
     adminPassword: dbAdminPassword
@@ -210,9 +218,10 @@ module databaseModule 'components/postgresqlDatabase.bicep' = {
 module containerRegistryModule 'components/containerRegistry.bicep' = {
   name: 'acrDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
     containerRegistryName: containerRegistryName
+    deployRegistry: deployRegistry
     tagValues: tagValues
   }
 }
@@ -221,7 +230,7 @@ module containerRegistryModule 'components/containerRegistry.bicep' = {
 module seedRegistryModule 'components/acrSeeder.bicep' = {
   name: 'acrSeeder'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
     containerRegistryName: containerRegistryModule.outputs.containerRegistryName
     containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
@@ -237,9 +246,8 @@ module seedRegistryModule 'components/acrSeeder.bicep' = {
 module containerAppModule 'components/containerApp.bicep' = {
   name: 'appContainerDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
-    environment: environment
     containerAppName: containerAppName
     containerAppEnvName: containerAppEnvName
     containerAppLogAnalyticsName: containerAppLogAnalyticsName
@@ -264,9 +272,8 @@ module containerAppModule 'components/containerApp.bicep' = {
 module serviceBusFunctionQueueModule 'components/serviceBusQueue.bicep' = {
   name: 'serviceBusQueueDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
-    environment: environment
     namespaceName: namespaceName
     queueName:queueName
     tagValues: tagValues
@@ -277,9 +284,8 @@ module serviceBusFunctionQueueModule 'components/serviceBusQueue.bicep' = {
 module etlFunctionAppModule 'application/etlFunctionApp.bicep' = {
   name: 'etlFunctionAppDeploy'
   params: {
-    subscription: subscription
+    resourcePrefix: resourcePrefix
     location: location
-    environment: environment
     functionAppName: functionAppName
     keyVaultName: keyVaultModule.outputs.keyVaultName
     databaseConnectionStringURI: databaseModule.outputs.connectionStringSecretUri
