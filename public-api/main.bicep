@@ -105,10 +105,10 @@ param seedRegistry bool = true
 
 //ServiceBus Queue Params -------------------------------------------------------------------
 @description('Name of the Service Bus namespace')
-param namespaceName string = 'processornamespace'
+param namespaceName string = 'processor'
 
 @description('Name of the Queue')
-param queueName string = 'Processorfunctionqueue'
+param queueName string = 'Processorqueue'
 
 //ETL Function Paramenters ------------------------------------------------------------------
 @description('Specifies the name of the function.')
@@ -266,6 +266,7 @@ module serviceBusFunctionQueueModule 'components/serviceBusQueue.bicep' = {
   params: {
     subscription: subscription
     location: location
+    environment: environment
     namespaceName: namespaceName
     queueName:queueName
     tagValues: tagValues

@@ -48,6 +48,7 @@ var databaseConnectionStringKeyVaultRef = '@Microsoft.KeyVault(SecretUri=${datab
 var appServicePlanName = '${subscription}-aps-${environment}-${functionAppName}'
 var reserved = appServicePlanOS == 'Linux' ? true : false
 var applicationInsightsName ='${subscription}-ai-${environment}-${functionAppName}'
+var functionName = '${subscription}-fa-${environment}-${functionAppName}'
 
 //Resources
 
@@ -74,7 +75,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
-  name: functionAppName
+  name: functionName
   location: location
   kind: kind
   properties: {

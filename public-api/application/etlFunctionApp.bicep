@@ -32,7 +32,7 @@ param tagValues object
 
 
 // Variables and created data
-var functionName = '${subscription}-fa-${environment}-${functionAppName}'
+
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ module functionAppModule '../components/functionApp.bicep' = {
   params: {
     subscription: subscription
     environment: environment
-    functionAppName: functionName
+    functionAppName: functionAppName
     location: location
     tagValues: tagValues
     databaseConnectionString: databaseConnectionStringURI

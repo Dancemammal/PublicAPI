@@ -5,7 +5,7 @@ param subscription string
 param location string
 
 @description('Environment Name e.g. dev. Used as a prefix for created resources')
-param environment string = 'eespublicapi'
+param environment string
 
 //Specific parameters for the resources
 @description('Name of the Service Bus namespace')
