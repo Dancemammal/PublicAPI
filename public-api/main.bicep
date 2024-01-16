@@ -123,6 +123,7 @@ param functionAppName string = 'processor'
 // Variables and created data
 //---------------------------------------------------------------------------------------------------------------
 var resourcePrefix = '${subscription}-${environment}'
+var redResourcePrefix = '${subscription}-api'
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ module fileShareModule 'components/fileShares.bicep' = {
 module keyVaultModule 'components/keyVault.bicep' = {
   name: 'keyVaultDeploy'
   params: {
-    resourcePrefix: resourcePrefix
+    resourcePrefix: redResourcePrefix
     location: location
     environment: environment
     tenantId: az.subscription().tenantId
