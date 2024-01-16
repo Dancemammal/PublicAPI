@@ -3,7 +3,7 @@ using '../main.bicep'
 //Environment Params -------------------------------------------------------------------
 param domain = 'publicapi'
 param subscription = 's101d01'
-param environment = 'api'
+param environment = 'eespubapi'
 param environmentName = 'Test'
 
 //Networking Params --------------------------------------------------------------------------
@@ -22,7 +22,7 @@ param containerRegistryName = 'eesapiacr'
 param deployRegistry = true
 
 //Container App Params
-param containerAppName = 'publicapi'
+param containerAppName = 'pubapi'
 param acrHostedImageName = 'azuredocs/aci-helloworld'
 param targetPort = 80
 
