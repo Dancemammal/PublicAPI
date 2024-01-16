@@ -95,6 +95,7 @@ resource functionAppSettings 'Microsoft.Web/sites/config@2023-01-01' = {
   properties: {
     AzureWebJobsStorage: storageAccountConnectionString
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
+    WEBSITE_CONTENTSHARE: toLower(functionAppName)
     FUNCTIONS_EXTENSION_VERSION: '~4'
     APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsightsModule.outputs.applicationInsightsKey
     FUNCTIONS_WORKER_RUNTIME: functionAppRuntime
