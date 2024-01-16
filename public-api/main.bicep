@@ -86,10 +86,10 @@ param containerRegistryName string
 param containerAppName string
 
 @description('Specifies the name of the container app environment.')
-param containerAppEnvName string = 'publicAPI'
+param containerAppEnvName string = 'publicapi'
 
 @description('Specifies the name of the log analytics workspace.')
-param containerAppLogAnalyticsName string = 'publicAPI'
+param containerAppLogAnalyticsName string = 'publicapi'
 
 @description('Container App : Specifies the container image to deploy from the registry <name>:<tag>.')
 param acrHostedImageName string

@@ -21,7 +21,7 @@ param autoGrowStatus = 'Disabled'
 param containerRegistryName = 'eesapiacr'
 
 //Container App Params
-param containerAppName = 'publicAPI'
+param containerAppName = 'publicapi'
 param acrHostedImageName = 'azuredocs/aci-helloworld'
 param targetPort = 80
 
