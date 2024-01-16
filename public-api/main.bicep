@@ -145,7 +145,7 @@ module vnetModule 'components/network.bicep' = {
 module storageAccountModule 'components/storageAccount.bicep' = {
   name: 'storageAccountDeploy'
   params: {
-    resourcePrefix: resourcePrefix
+    resourcePrefix: redResourcePrefix
     location: location
     storageAccountName: storageAccountName
     storageSubnetRules: [vnetModule.outputs.adminSubnetRef, vnetModule.outputs.importerSubnetRef, vnetModule.outputs.publisherSubnetRef]
