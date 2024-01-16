@@ -83,10 +83,6 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
     serverFarmId: appServicePlan.id
     clientAffinityEnabled: true
     reserved: true
-    siteConfig: {
-      alwaysOn: true
-      linuxFxVersion: 'NODE|14'
-    }
   }
   tags: tagValues
   dependsOn: [
