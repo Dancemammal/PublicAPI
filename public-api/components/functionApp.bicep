@@ -62,7 +62,7 @@ module applicationInsightsModule '../components/appInsights.bicep' = {
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: appServicePlanName
   location: location
-  kind: 'functionapp'
+  kind: kind
   sku: {
     name: 'Y1'
   }
@@ -75,11 +75,18 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
   name: functionName
   location: location
   kind: kind
-  properties: {
-    serverFarmId: appServicePlan.id
-  }
   identity: {
     type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: appServicePlan.id
+    clientAffinityEnabled: true
+    reserved: true
+    siteConfig: {
+      alwaysOn: true
+      linuxFxVersion: 'NODE|14'
+    }
   }
   tags: tagValues
   dependsOn: [

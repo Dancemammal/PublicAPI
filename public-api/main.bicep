@@ -170,17 +170,6 @@ module fileShareModule 'components/fileShares.bicep' = {
   ]
 }
 
-//Deploy Function blob store
-module blobStoreModule 'components/blobStore.bicep' = {
-  name: 'blobStoreDeploy'
-  params: {
-    storageAccountName: storageAccountModule.outputs.storageAccountName
-  }
-  dependsOn: [
-    storageAccountModule
-  ]
-}
-
 //Deploy Key Vault
 module keyVaultModule 'components/keyVault.bicep' = {
   name: 'keyVaultDeploy'
