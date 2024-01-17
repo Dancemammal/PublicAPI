@@ -1,5 +1,5 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
@@ -7,7 +7,7 @@ param location string
 @minLength(5)
 @maxLength(50)
 @description('Name of the azure container registry (must be globally unique)')
-param containerRegistryName string = 'eesapiacr'
+param containerRegistryName string
 
 @allowed([
   'Basic'
@@ -15,21 +15,24 @@ param containerRegistryName string = 'eesapiacr'
   'Premium'
 ])
 @description('Tier of your Azure Container Registry.')
-param containerRegistrySku string = 'Basic'
+param skuName string = 'Basic'
+
+@description('Deploy the Container Registry')
+param deployRegistry bool
 
 //Passed in Tags
 param tagValues object
 
 //Variables
-var ContainerRegistryName = '${subscription}${containerRegistryName}'
+var RegistryName = replace('${resourcePrefix}cr${containerRegistryName}', '-', '')
 
 
 //Resources 
-resource apiContainerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
-  name: ContainerRegistryName
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = if (deployRegistry) {
+  name: RegistryName
   location: location
   sku: {
-    name: containerRegistrySku
+    name: skuName
   }
   properties: {
     adminUserEnabled: false
@@ -44,9 +47,12 @@ resource apiContainerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01
 }
 
 
+resource currentContainerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
+  name: RegistryName
+}
 
 
 // Outputs for exported use
-output crID string = apiContainerRegistry.id
-output crName string = apiContainerRegistry.name
-output crLoginServer string = apiContainerRegistry.properties.loginServer
+output containerRegistryId string = currentContainerRegistry.id
+output containerRegistryName string = currentContainerRegistry.name
+output containerRegistryLoginServer string = currentContainerRegistry.properties.loginServer

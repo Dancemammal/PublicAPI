@@ -1,5 +1,5 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
@@ -31,10 +31,10 @@ param skuName string = 'standard'
 param tagValues object
 
 // Variables and created data
-var keyVaultName = '${subscription}-kv-${environment}-api1'
+var keyVaultName = '${resourcePrefix}-kv-api01'
 
 //Resources
-resource keyvault 'Microsoft.KeyVault/vaults@2021-11-01-preview' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: keyVaultName
   location: location
   properties: {

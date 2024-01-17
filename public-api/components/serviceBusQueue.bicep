@@ -1,5 +1,5 @@
-@description('Specifies the Subscription to be used.')
-param subscription string
+@description('Specifies the Resource Prefix')
+param resourcePrefix string
 
 @description('Specifies the location for all resources.')
 param location string
@@ -16,8 +16,8 @@ param tagValues object
 
 
 // Variables and created data
-var serviceBusNamespaceName = '${subscription}-sbns-${namespaceName}'
-var serviceBusQueueName = '${subscription}-sbq-${queueName}'
+var serviceBusNamespaceName = '${resourcePrefix}-sbns-${namespaceName}'
+var serviceBusQueueName = '${resourcePrefix}-sbq-${queueName}'
 var serviceBusEndpoint = '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey'
 var serviceBusConnectionString = listKeys(serviceBusEndpoint, serviceBusNamespace.apiVersion).primaryConnectionString
 
@@ -25,7 +25,7 @@ var serviceBusConnectionString = listKeys(serviceBusEndpoint, serviceBusNamespac
 //Resources 
 
 //ServiceBus Namespace
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-01-01-preview' = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
   name: serviceBusNamespaceName
   location: location
   sku: {
@@ -36,13 +36,13 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-01-01-preview
 }
 
 //ServiceBus Queue
-resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
+resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-preview' = {
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {
-    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
+    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S' //Max time possible to stop messages being auto-deleted
     deadLetteringOnMessageExpiration: false
-    defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S'
+    defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S' //Max time possible to stop messages being auto-deleted
     duplicateDetectionHistoryTimeWindow: 'PT10M'
     enableExpress: false
     enablePartitioning: false
@@ -56,8 +56,8 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-prev
 
 
 //Outputs
-output ServiceBusQueueRef string = serviceBusQueue.id
-output ServiceBusQueueName string = serviceBusQueue.name
-output ServiceBusConnectionString string = serviceBusConnectionString
+output serviceBusQueueRef string = serviceBusQueue.id
+output serviceBusQueueName string = serviceBusQueue.name
+output serviceBusConnectionString string = serviceBusConnectionString
 
 
