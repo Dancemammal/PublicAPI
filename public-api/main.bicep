@@ -134,7 +134,8 @@ var redResourcePrefix = '${subscription}-api'
 module vnetModule 'components/network.bicep' = {
   name: 'virtualNetworkDeploy'
   params: {
-    resourcePrefix: resourcePrefix
+    subscription: subscription
+    environment: environment
     location: location
     deploySubnets: deploySubnets
     tagValues: tagValues

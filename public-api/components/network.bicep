@@ -1,5 +1,8 @@
-@description('Specifies the Resource Prefix')
-param resourcePrefix string
+@description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
+param subscription string
+
+@description('Environment Name Used as a prefix for created resources')
+param environment string 
 
 @description('Specifies the location for all resources.')
 param location string
@@ -30,12 +33,12 @@ param deploySubnets bool = true
 param tagValues object
 
 // Variables and created data
-var vNetName = '${resourcePrefix}-vnet'
-var adminSubnetName = '${resourcePrefix}-snet-admin'
-var importerSubnetName = '${resourcePrefix}-snet-importer'
-var publisherSubnetName = '${resourcePrefix}-snet-publisher'
-var contentSubnetName = '${resourcePrefix}-snet-content'
-var dataSubnetName = '${resourcePrefix}-snet-data'
+var vNetName = '${subscription}-vnet-${environment}'
+var adminSubnetName = '${subscription}-snet-${environment}-admin'
+var importerSubnetName = '${subscription}-snet-${environment}-importer'
+var publisherSubnetName = '${subscription}-snet-${environment}-publisher'
+var contentSubnetName = '${subscription}-snet-${environment}-content'
+var databaseSubnetName = '${subscription}-snet-${environment}-database'
 
 
 //Resources 
@@ -115,7 +118,7 @@ resource contentsubnet 'Microsoft.Network/virtualNetworks/subnets@2023-04-01' = 
 
 resource databasesubnet 'Microsoft.Network/virtualNetworks/subnets@2023-04-01' = if (deploySubnets) {
   parent: virtualnetwork
-  name: dataSubnetName
+  name: databaseSubnetName
   properties: {
     addressPrefix: databaseSubnetPrefix
     serviceEndpoints: [
@@ -143,4 +146,4 @@ output importerSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/
 output publisherSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/subnets', vNetName, publisherSubnetName)
 
 @description('The fully qualified Azure resource ID of the Subnet.')
-output databaseSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/subnets', vNetName, dataSubnetName)
+output databaseSubnetRef string = resourceId('Microsoft.Network/VirtualNetworks/subnets', vNetName, databaseSubnetName)
