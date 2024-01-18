@@ -29,7 +29,7 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
 }
 
 @description('This allows the managed identity of the seeder to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
-resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (seedRegistry) {
   name: guid(resourceGroup().id, managedIdentity.id, acrPullRole)
   properties: {
     roleDefinitionId: acrPullRole

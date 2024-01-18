@@ -82,6 +82,12 @@ param containerRegistryName string
 @description('Deploy the Container Registry if you are not using an existing registry')
 param deployRegistry bool
 
+@description('Container App : Specifies the container image to seed to the ACR.')
+param containerSeedImage string
+
+@description('Select if you want to seed the ACR with a base image.')
+param seedRegistry bool = true
+
 //Container App Params
 @minLength(2)
 @maxLength(32)
@@ -100,11 +106,9 @@ param acrHostedImageName string
 @description('Specifies the container port.')
 param targetPort int = 80
 
-@description('Container App : Specifies the container image to seed to the ACR.')
-param containerSeedImage string
+@description('Select if you want to use a public dummy image to start the container app.')
+param useDummyImage bool
 
-@description('Select if you want to seed the ACR with a base image.')
-param seedRegistry bool = true
 
 //ServiceBus Queue Params -------------------------------------------------------------------
 @description('Name of the Service Bus namespace')
@@ -245,6 +249,7 @@ module containerAppModule 'components/containerApp.bicep' = {
     acrLoginServer: containerRegistryModule.outputs.containerRegistryLoginServer
     acrHostedImageName: acrHostedImageName //image name plus tag i.e. 'azuredocs/aci-helloworld'
     targetPort: targetPort
+    useDummyImage: useDummyImage
     envParams: [
       {
         name: 'adoDBConnectionString'

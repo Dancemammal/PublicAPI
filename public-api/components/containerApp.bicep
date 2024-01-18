@@ -25,6 +25,9 @@ param containerAppLogAnalyticsName string
 @description('Specifies the container port.')
 param targetPort int = 80
 
+@description('Select if you want to use a public dummy image to start the container app.')
+param useDummyImage bool
+
 @description('Number of CPU cores the container can use. Can be with a maximum of two decimals.')
 @allowed([
   '0.25'
@@ -68,13 +71,15 @@ param tagValues object
 
 
 //Variables 
-var containerImageName = '${acrLoginServer}/${acrHostedImageName}' 
+//var containerImageName = '${acrLoginServer}/${acrHostedImageName}'
+var containerImageName = useDummyImage == true ? 'mcr.microsoft.com/azuredocs/aci-helloworld' : '${acrLoginServer}/${acrHostedImageName}'
 var containerEnvName = '${resourcePrefix}-cae-${containerAppEnvName}'
 var containerApplicationName = toLower('${resourcePrefix}-ca-${containerAppName}')
 var userIdentityName = '${resourcePrefix}-id-${containerAppName}'
 var containerLogName = '${resourcePrefix}-log-${containerAppLogAnalyticsName}'
 var applicationInsightsName ='${resourcePrefix}-ai-${containerAppName}'
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
+
 
 //Resources 
 
@@ -106,7 +111,7 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
 }
 
 @description('This allows the managed identity of the container app to access the registry, note scope is applied to the wider ResourceGroup not the ACR')
-resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!useDummyImage) {
   name: guid(resourceGroup().id, managedIdentity.id, acrPullRole)
   properties: {
     roleDefinitionId: acrPullRole
@@ -200,3 +205,4 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
 // Outputs for exported use
 output containerAppFQDN string = containerApp.properties.configuration.ingress.fqdn
 output containerImage string = containerImageName
+output managedIdentityName string = userIdentityName
