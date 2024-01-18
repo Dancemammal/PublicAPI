@@ -246,7 +246,7 @@ module containerAppModule 'components/containerApp.bicep' = {
     containerAppEnvName: containerAppEnvName
     containerAppLogAnalyticsName: containerAppLogAnalyticsName
     acrLoginServer: containerRegistryModule.outputs.containerRegistryLoginServer
-    acrHostedImageName: acrHostedImageName //image name plus tag i.e. 'azuredocs/aci-helloworld'
+    acrHostedImageName: acrHostedImageName
     targetPort: targetPort
     useDummyImage: useDummyImage
     envParams: [

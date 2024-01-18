@@ -164,12 +164,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           }
         ]
       }
-      registries: [
-        {
-          identity: (!useDummyImage) ? managedIdentity.id : null
-          server: (!useDummyImage) ? acrLoginServer : null
-        }
-      ]
+      
     }
     template: {
       containers: [
