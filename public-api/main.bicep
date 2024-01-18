@@ -86,7 +86,7 @@ param deployRegistry bool
 param containerSeedImage string
 
 @description('Select if you want to seed the ACR with a base image.')
-param seedRegistry bool = true
+param seedRegistry bool
 
 //Container App Params
 @minLength(2)
@@ -182,7 +182,6 @@ module keyVaultModule 'components/keyVault.bicep' = {
   params: {
     resourcePrefix: redResourcePrefix
     location: location
-    environment: environment
     tenantId: az.subscription().tenantId
     tagValues: tagValues
   }
@@ -222,7 +221,7 @@ module containerRegistryModule 'components/containerRegistry.bicep' = {
 }
 
 //Seed Container Registry 
-module seedRegistryModule 'components/acrSeeder.bicep' = {
+module seedRegistryModule 'components/acrSeeder.bicep' = if (seedRegistry) {
   name: 'acrSeeder'
   params: {
     resourcePrefix: resourcePrefix

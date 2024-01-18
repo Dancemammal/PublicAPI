@@ -4,9 +4,6 @@ param resourcePrefix string
 @description('Specifies the location for all resources.')
 param location string
 
-@description('Specifies the Environment for all resources.')
-param environment string
-
 //Specific parameters for the resources
 @description('Specifies the Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. Get it by using Get-AzSubscription cmdlet.')
 param tenantId string

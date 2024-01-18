@@ -81,6 +81,7 @@ var applicationInsightsName ='${resourcePrefix}-ai-${containerAppName}'
 var acrPullRole = resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 
+
 //Resources 
 
 //Log Analytics
@@ -138,7 +139,7 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
 }
 
 //Container Application
-resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
+resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerApplicationName
   location: location
   identity: {
@@ -165,8 +166,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
       }
       registries: [
         {
-          identity: managedIdentity.id
-          server: acrLoginServer
+          identity: (!useDummyImage) ? managedIdentity.id : null
+          server: (!useDummyImage) ? acrLoginServer : null
         }
       ]
     }
