@@ -88,7 +88,7 @@ param containerSeedImage string
 @description('Select if you want to seed the ACR with a base image.')
 param seedRegistry bool
 
-//Container App Params
+//Container App Params -------------------------------------------------------------------
 @minLength(2)
 @maxLength(32)
 @description('Specifies the name of the container app.')
@@ -227,8 +227,7 @@ module seedRegistryModule 'components/acrSeeder.bicep' = if (seedRegistry) {
     resourcePrefix: resourcePrefix
     location: location
     containerRegistryName: containerRegistryModule.outputs.containerRegistryName
-    containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
-    seedRegistry: seedRegistry
+    containerSeedImage: containerSeedImage
   }
   dependsOn: [
     containerRegistryModule
@@ -299,3 +298,4 @@ module etlFunctionAppModule 'application/etlFunctionApp.bicep' = {
 output containerRegistryLoginServer string = containerRegistryModule.outputs.containerRegistryLoginServer
 output containerRegistryName string = containerRegistryModule.name
 output metadataDatabaseRef string = databaseModule.outputs.databaseRef
+output managedIdentityName string = containerAppModule.outputs.managedIdentityName

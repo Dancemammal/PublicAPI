@@ -17,16 +17,16 @@ param dbSkuName = 'Standard_B1ms'
 param storageSizeGB = 32
 param autoGrowStatus = 'Disabled'
 
-//Container Registry
+//Container Registry -------------------------------------------------------------------
 param containerRegistryName = 'eesapiacr'
 param deployRegistry = true
 
-//Container App Params
+//Container App Params -------------------------------------------------------------------
 param containerAppName = 'eesapi'
 param acrHostedImageName = 'azuredocs/aci-helloworld'
 param targetPort = 80
 param useDummyImage = true
 
-//Container Seed Params
+//Container Seed Params -------------------------------------------------------------------
 param containerSeedImage = 'mcr.microsoft.com/azuredocs/aci-helloworld'
 param seedRegistry = false

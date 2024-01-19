@@ -164,7 +164,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           }
         ]
       }
-      
+
     }
     template: {
       containers: [
@@ -201,4 +201,4 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
 // Outputs for exported use
 output containerAppFQDN string = containerApp.properties.configuration.ingress.fqdn
 output containerImage string = containerImageName
-output managedIdentityName string = userIdentityName
+output managedIdentityName string = managedIdentity.name
