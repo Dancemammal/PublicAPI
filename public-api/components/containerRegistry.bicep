@@ -17,7 +17,7 @@ param containerRegistryName string
 @description('Tier of your Azure Container Registry.')
 param skuName string = 'Basic'
 
-@description('Deploy the Container Registry')
+@description('Deploy a new Container Registry or use the existing registry')
 param deployRegistry bool
 
 //Passed in Tags

@@ -4,9 +4,6 @@ param resourcePrefix string
 @description('Specifies the location for all resources.')
 param location string
 
-@description('Select if you want to seed the ACR with a base image.')
-param seedRegistry bool = true
-
 @minLength(5)
 @maxLength(50)
 @description('Name of the azure container registry (must be globally unique)')
@@ -40,7 +37,7 @@ resource managedIdentityRBAC 'Microsoft.Authorization/roleAssignments@2022-04-01
 
 //Registry Seeder
 @description('This module seeds the ACR with the public version of the app')
-module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = if (seedRegistry) {
+module acrImportImage 'br/public:deployment-scripts/import-acr:3.0.1' = {
   name: containerImportName
   params: {
     useExistingManagedIdentity: false

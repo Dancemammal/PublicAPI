@@ -82,7 +82,13 @@ param containerRegistryName string
 @description('Deploy the Container Registry if you are not using an existing registry')
 param deployRegistry bool
 
-//Container App Params
+@description('Container App : Specifies the container image to seed to the ACR.')
+param containerSeedImage string
+
+@description('Select if you want to seed the ACR with a base image.')
+param seedRegistry bool
+
+//Container App Params -------------------------------------------------------------------
 @minLength(2)
 @maxLength(32)
 @description('Specifies the name of the container app.')
@@ -100,11 +106,9 @@ param acrHostedImageName string
 @description('Specifies the container port.')
 param targetPort int = 80
 
-@description('Container App : Specifies the container image to seed to the ACR.')
-param containerSeedImage string
+@description('Select if you want to use a public dummy image to start the container app.')
+param useDummyImage bool
 
-@description('Select if you want to seed the ACR with a base image.')
-param seedRegistry bool = true
 
 //ServiceBus Queue Params -------------------------------------------------------------------
 @description('Name of the Service Bus namespace')
@@ -134,7 +138,8 @@ var redResourcePrefix = '${subscription}-api'
 module vnetModule 'components/network.bicep' = {
   name: 'virtualNetworkDeploy'
   params: {
-    resourcePrefix: resourcePrefix
+    subscription: subscription
+    environment: environment
     location: location
     deploySubnets: deploySubnets
     tagValues: tagValues
@@ -177,7 +182,6 @@ module keyVaultModule 'components/keyVault.bicep' = {
   params: {
     resourcePrefix: redResourcePrefix
     location: location
-    environment: environment
     tenantId: az.subscription().tenantId
     tagValues: tagValues
   }
@@ -217,14 +221,13 @@ module containerRegistryModule 'components/containerRegistry.bicep' = {
 }
 
 //Seed Container Registry 
-module seedRegistryModule 'components/acrSeeder.bicep' = {
+module seedRegistryModule 'components/acrSeeder.bicep' = if (seedRegistry) {
   name: 'acrSeeder'
   params: {
     resourcePrefix: resourcePrefix
     location: location
     containerRegistryName: containerRegistryModule.outputs.containerRegistryName
-    containerSeedImage: containerSeedImage // seeder image name 'mcr.microsoft.com/azuredocs/aci-helloworld'
-    seedRegistry: seedRegistry
+    containerSeedImage: containerSeedImage
   }
   dependsOn: [
     containerRegistryModule
@@ -242,8 +245,9 @@ module containerAppModule 'components/containerApp.bicep' = {
     containerAppEnvName: containerAppEnvName
     containerAppLogAnalyticsName: containerAppLogAnalyticsName
     acrLoginServer: containerRegistryModule.outputs.containerRegistryLoginServer
-    acrHostedImageName: acrHostedImageName //image name plus tag i.e. 'azuredocs/aci-helloworld'
+    acrHostedImageName: acrHostedImageName
     targetPort: targetPort
+    useDummyImage: useDummyImage
     envParams: [
       {
         name: 'adoDBConnectionString'
@@ -294,3 +298,4 @@ module etlFunctionAppModule 'application/etlFunctionApp.bicep' = {
 output containerRegistryLoginServer string = containerRegistryModule.outputs.containerRegistryLoginServer
 output containerRegistryName string = containerRegistryModule.name
 output metadataDatabaseRef string = databaseModule.outputs.databaseRef
+output managedIdentityName string = containerAppModule.outputs.managedIdentityName
