@@ -52,7 +52,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Install Bicep' 
       inputs:
-        azureSubscription: ${{azureSubscription}} 
+        azureSubscription: ${{parameters.azureSubscription}} 
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: 'az bicep install'
@@ -60,7 +60,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Validate bicep scripts' 
       inputs:
-        azureSubscription: ${{azureSubscription}} 
+        azureSubscription: ${{parameters.azureSubscription}} 
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
@@ -86,7 +86,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}} 
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -111,7 +111,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}} 
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -136,7 +136,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}} 
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -161,7 +161,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}} 
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
