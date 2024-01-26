@@ -85,9 +85,6 @@ param deployRegistry bool
 @description('Container App : Specifies the container image to seed to the ACR.')
 param containerSeedImage string
 
-@description('Select if you want to seed the ACR with a base image.')
-param seedRegistry bool
-
 //Container App Params -------------------------------------------------------------------
 @minLength(2)
 @maxLength(32)
@@ -218,21 +215,6 @@ module containerRegistryModule 'components/containerRegistry.bicep' = {
     deployRegistry: deployRegistry
     tagValues: tagValues
   }
-}
-
-//Seed Container Registry 
-module seedRegistryModule 'components/acrSeeder.bicep' = if (seedRegistry) {
-  name: 'acrSeeder'
-  params: {
-    resourcePrefix: resourcePrefix
-    location: location
-    containerRegistryName: containerRegistryModule.outputs.containerRegistryName
-    containerSeedImage: containerSeedImage
-  }
-  dependsOn: [
-    containerRegistryModule
-    keyVaultModule
-  ]
 }
 
 //Deploy Container Application
