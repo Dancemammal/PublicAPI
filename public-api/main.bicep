@@ -6,7 +6,7 @@ param domain string
 param subscription string
 
 @description('Environment Name Used as a prefix for created resources')
-param environment string 
+param environment string = 'ees'
 
 @description('Specifies the location in which the Azure resources should be deployed.')
 param location string = resourceGroup().location
@@ -48,7 +48,7 @@ param fileShareQuota int = 1
 
 //PostgreSQL Database Params -------------------------------------------------------------------
 @description('Database : PostgreSQL server Name')
-param postgreSQLserverName string
+param postgreSQLserverName string = 'publicapi-data'
 
 @description('Database : administrator login name')
 @minLength(0)

@@ -10,7 +10,6 @@ param environmentName = 'Test'
 param deploySubnets = true
 
 //PostgreSQL Database Params -------------------------------------------------------------------
-param postgreSQLserverName = 'metadata'
 param dbAdminName = 'PostgreSQLAdmin'
 param dbAdminPassword = 'postgreSQLAdminPassword'
 param dbSkuName = 'Standard_B1ms'

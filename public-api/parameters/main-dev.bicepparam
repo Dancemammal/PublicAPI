@@ -3,14 +3,12 @@ using '../main.bicep'
 //Environment Params -------------------------------------------------------------------
 param domain = 'publicapi'
 param subscription = 's101d01'
-param environment = 'eesapi'
 param environmentName = 'Development'
 
 //Networking Params --------------------------------------------------------------------------
 param deploySubnets = true
 
 //PostgreSQL Database Params -------------------------------------------------------------------
-param postgreSQLserverName = 'metadata'
 param dbAdminName = 'PostgreSQLAdmin'
 param dbAdminPassword = 'postgreSQLAdminPassword'
 param dbSkuName = 'Standard_B1ms'

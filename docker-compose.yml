@@ -1,0 +1,12 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+services:
+  govukeducationexploreeducationstatisticspublicdataapi:
+    image: govukeducationexploreeducationstatisticspublicdataapi
+    build:
+      context: .
+      dockerfile: src/GovUk.Education.ExploreEducationStatistics.Public.Data.Api/Dockerfile
+    ports:
+      - 5010:5010
