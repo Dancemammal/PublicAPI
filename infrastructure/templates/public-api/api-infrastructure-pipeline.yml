@@ -63,8 +63,8 @@ stages:
         script: |
           echo "az deployment group validate \
           --resource-group ${{parameters.resourceGroupName}} \
-          --template-file "$(templateFile)" \
-          --parameters "$(devParamFile)"
+          --template-file '$(templateFile)' \
+          --parameters '$(devParamFile)'"
 
     - task: AzureCLI@2
       displayName: 'Validate bicep scripts' 
