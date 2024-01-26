@@ -57,6 +57,15 @@ stages:
         scriptLocation: inlineScript
         inlineScript: 'az bicep install'
 
+    - task: CmdLine@2
+      displayName: 'Script to run'
+      inputs:
+        script: |
+          echo "az deployment group validate \
+          --resource-group ${{parameters.resourceGroupName}} \
+          --template-file $(templateFile) \
+          --parameters $(devParamFile)"
+
     - task: AzureCLI@2
       displayName: 'Validate bicep scripts' 
       inputs:
