@@ -35,7 +35,7 @@ param useDummyImage bool
   '3'
   '4'
 ])
-param cpuCore string = '2'
+param cpuCore string = '4'
 
 @description('Amount of memory (in gibibytes, GiB) allocated to the container up to 4GiB. Can be with a maximum of two decimals. Ratio with CPU cores must be equal to 2.')
 @allowed([
@@ -48,7 +48,7 @@ param cpuCore string = '2'
   '7'
   '8'
 ])
-param memorySize string = '4'
+param memorySize string = '8'
 
 @description('Minimum number of replicas that will be deployed')
 @minValue(0)
