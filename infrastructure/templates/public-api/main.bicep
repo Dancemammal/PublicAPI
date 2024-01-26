@@ -82,9 +82,6 @@ param containerRegistryName string
 @description('Deploy the Container Registry if you are not using an existing registry')
 param deployRegistry bool
 
-@description('Container App : Specifies the container image to seed to the ACR.')
-param containerSeedImage string
-
 //Container App Params -------------------------------------------------------------------
 @minLength(2)
 @maxLength(32)

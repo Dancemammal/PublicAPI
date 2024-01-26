@@ -25,7 +25,3 @@ param containerAppName = 'eesapi'
 param acrHostedImageName = 'azuredocs/aci-helloworld'
 param targetPort = 80
 param useDummyImage = true
-
-//Container Seed Params -------------------------------------------------------------------
-param containerSeedImage = 'mcr.microsoft.com/azuredocs/aci-helloworld'
-param seedRegistry = false
