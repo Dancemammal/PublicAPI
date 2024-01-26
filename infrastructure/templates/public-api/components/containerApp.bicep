@@ -134,8 +134,8 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
     }
     workloadProfiles: [
       {
-        name: 'consumptionWP'
-        workloadProfileType: 'consumption'
+        name: 'Consumption'
+        workloadProfileType: 'Consumption'
       }
     ]
   }
