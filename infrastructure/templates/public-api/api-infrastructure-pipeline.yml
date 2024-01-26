@@ -72,11 +72,7 @@ stages:
         azureSubscription: ${{parameters.azureSubscription}} 
         scriptType: bash
         scriptLocation: inlineScript
-        inlineScript: |
-          'az deployment group validate \
-          --resource-group ${{parameters.resourceGroupName}} \
-          --template-file $(templateFile) \
-          --parameters $(devParamFile)'
+        inlineScript: az deployment group validate --resource-group ${{parameters.resourceGroupName}} --template-file $(templateFile) --parameters $(devParamFile)
 
 - stage: DeployDev
   displayName: 'Deploy to Development'
