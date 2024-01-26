@@ -2,7 +2,7 @@ using '../main.bicep'
 
 //Environment Params -------------------------------------------------------------------
 param domain = 'publicapi'
-param subscription = 's101d01'
+param subscription = 's101'
 param environmentName = 'Development'
 
 //Networking Params --------------------------------------------------------------------------
@@ -27,4 +27,3 @@ param useDummyImage = true
 
 //Container Seed Params -------------------------------------------------------------------
 param containerSeedImage = 'mcr.microsoft.com/azuredocs/aci-helloworld'
-param seedRegistry = false

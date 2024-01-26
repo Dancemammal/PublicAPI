@@ -2,7 +2,7 @@
 @description('Base domain name for Public API')
 param domain string
 
-@description('Subscription Name e.g. s101d01. Used as a prefix for created resources')
+@description('Subscription Name e.g. s101. Used as a prefix for created resources')
 param subscription string
 
 @description('Environment Name Used as a prefix for created resources')

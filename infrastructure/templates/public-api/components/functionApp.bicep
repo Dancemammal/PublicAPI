@@ -53,6 +53,7 @@ var functionName = '${resourcePrefix}-fa-${functionAppName}'
 module applicationInsightsModule '../components/appInsights.bicep' = {
   name: 'appInsightsDeploy-${functionAppName}'
   params: {
+    resourcePrefix: resourcePrefix
     location: location
     appInsightsName: applicationInsightsName
   }

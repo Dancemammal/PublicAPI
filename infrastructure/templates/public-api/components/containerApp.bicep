@@ -97,6 +97,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
 module applicationInsightsModule '../components/appInsights.bicep' = {
   name: 'appInsightsDeploy-${containerAppName}'
   params: {
+    resourcePrefix: resourcePrefix
     location: location
     appInsightsName: applicationInsightsName
   }
