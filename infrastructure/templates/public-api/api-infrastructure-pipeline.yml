@@ -70,7 +70,7 @@ stages:
       displayName: 'Validate bicep scripts' 
       inputs:
         azureSubscription: ${{parameters.azureSubscription}} 
-        scriptType: bash
+        scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
           az deployment group validate \
