@@ -9,7 +9,7 @@ param location string
 param functionAppRuntime string = 'dotnet'
 
 @description('Specifies the name of the function.')
-param functionAppName string = 'processor'
+param functionAppName string = 'publicapi-processor'
 
 @description('Specifies the name of the Key Vault.')
 param keyVaultName string
