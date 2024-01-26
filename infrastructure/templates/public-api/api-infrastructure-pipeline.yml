@@ -57,15 +57,6 @@ stages:
         scriptLocation: inlineScript
         inlineScript: 'az bicep install'
 
-    - task: CmdLine@2
-      displayName: 'Script to run'
-      inputs:
-        script: |
-          echo "az deployment group validate \
-          --resource-group ${{parameters.resourceGroupName}} \
-          --template-file '$(templateFile)' \
-          --parameters '$(devParamFile)'"
-
     - task: AzureCLI@2
       displayName: 'Validate bicep scripts' 
       inputs:
@@ -75,8 +66,8 @@ stages:
         inlineScript: |
           az deployment group validate \
           --resource-group ${{parameters.resourceGroupName}} \
-          --template-file "$(templateFile)" \
-          --parameters "$(devParamFile)"
+          --template-file $(templateFile) \
+          --parameters $(devParamFile)
 
 - stage: DeployDev
   displayName: 'Deploy to Development'
@@ -99,9 +90,10 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az deployment group create /
-                --resource-group ${{parameters.resourceGroupName}} /
-                --template-file $(templateFile) --parameters $(devParamFile)
+                az deployment group create \
+                --resource-group ${{parameters.resourceGroupName}} \
+                --template-file $(templateFile) \
+                --parameters $(devParamFile)
 
 - stage: DeployTest
   displayName: 'Deploy to Testing'
@@ -124,9 +116,10 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az deployment group create /
-                --resource-group ${{parameters.resourceGroupName}} /
-                --template-file $(templateFile) --parameters $(testParamFile)
+                az deployment group create \
+                --resource-group ${{parameters.resourceGroupName}} \
+                --template-file $(templateFile) \
+                --parameters $(testParamFile)
 
 - stage: DeployPreProd
   displayName: 'Deploy to Pre-Prod'
@@ -149,9 +142,10 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az deployment group create /
-                --resource-group ${{parameters.resourceGroupName}} /
-                --template-file $(templateFile) --parameters $(preProdParamFile)
+                az deployment group create \
+                --resource-group ${{parameters.resourceGroupName}} \
+                --template-file $(templateFile) \
+                --parameters $(preProdParamFile)
 
 - stage: DeployProd
   displayName: 'Deploy to Production'
@@ -174,6 +168,7 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az deployment group create /
-                --resource-group ${{parameters.resourceGroupName}} /
-                --template-file $(templateFile) --parameters $(prodParamFile)
+                az deployment group create \
+                --resource-group ${{parameters.resourceGroupName}} \
+                --template-file $(templateFile) \
+                --parameters $(prodParamFile)
