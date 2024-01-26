@@ -16,7 +16,7 @@ param storageSizeGB = 32
 param autoGrowStatus = 'Disabled'
 
 //Container Registry -------------------------------------------------------------------
-param containerRegistryName = 'eesapiacr'
+param containerRegistryName = 'publicapi'
 param deployRegistry = true
 
 //Container App Params -------------------------------------------------------------------
