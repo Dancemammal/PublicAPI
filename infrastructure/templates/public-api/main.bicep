@@ -29,7 +29,7 @@ param tagValues object = {
 
 //Networking Params --------------------------------------------------------------------------
 @description('Networking : Deploy subnets for networking')
-param deploySubnets bool = true
+param deploySubnets bool = false
 
 @description('Networking : Included whitelist')
 param storageFirewallRules array = ['0.0.0.0/0']
@@ -48,7 +48,7 @@ param fileShareQuota int = 1
 
 //PostgreSQL Database Params -------------------------------------------------------------------
 @description('Database : PostgreSQL server Name')
-param postgreSQLserverName string = 'publicapi-data'
+param dbServerName string = 'publicapi-data'
 
 @description('Database : administrator login name')
 @minLength(0)
@@ -68,10 +68,10 @@ param dbAdminPassword string
 param dbSkuName string = 'Standard_B1ms'
 
 @description('Database : Azure Database for PostgreSQL Storage Size in GB')
-param storageSizeGB int = 32
+param dbStorageSizeGB int = 32
 
 @description('Database : Azure Database for PostgreSQL Autogrow setting')
-param autoGrowStatus string = 'Disabled'
+param dbAutoGrowStatus string = 'Disabled'
 
 //Container Registry Params ----------------------------------------------------------------
 @minLength(5)
@@ -95,10 +95,10 @@ param containerAppEnvName string = 'publicapi'
 param containerAppLogAnalyticsName string = 'publicapi'
 
 @description('Container App : Specifies the container image to deploy from the registry <name>:<tag>.')
-param acrHostedImageName string
+param containerAppImageName string
 
 @description('Specifies the container port.')
-param targetPort int = 80
+param containerAppTargetPort int = 80
 
 @description('Select if you want to use a public dummy image to start the container app.')
 param useDummyImage bool
@@ -121,7 +121,7 @@ param functionAppName string = 'processor'
 // Variables and created data
 //---------------------------------------------------------------------------------------------------------------
 var resourcePrefix = '${subscription}-${environment}'
-var redResourcePrefix = '${subscription}-api'
+var reducedResourcePrefix = '${subscription}-api'
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -140,19 +140,36 @@ module vnetModule 'components/network.bicep' = {
   }
 }
 
+//Deploy Key Vault
+module keyVaultModule 'components/keyVault.bicep' = {
+  name: 'keyVaultDeploy'
+  params: {
+    resourcePrefix: reducedResourcePrefix
+    location: location
+    tenantId: az.subscription().tenantId
+    tagValues: tagValues
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
+  name: keyVaultModule.name
+}
+
 //Deploy Storage Account
 module storageAccountModule 'components/storageAccount.bicep' = {
   name: 'storageAccountDeploy'
   params: {
-    resourcePrefix: redResourcePrefix
+    resourcePrefix: reducedResourcePrefix
     location: location
     storageAccountName: storageAccountName
     storageSubnetRules: [vnetModule.outputs.adminSubnetRef, vnetModule.outputs.importerSubnetRef, vnetModule.outputs.publisherSubnetRef]
     storageFirewallRules: storageFirewallRules
+    keyVaultName: keyVaultModule.outputs.keyVaultName
     tagValues: tagValues
   }
   dependsOn: [
     vnetModule
+    keyVaultModule
   ]
 }
 
@@ -170,16 +187,6 @@ module fileShareModule 'components/fileShares.bicep' = {
   ]
 }
 
-//Deploy Key Vault
-module keyVaultModule 'components/keyVault.bicep' = {
-  name: 'keyVaultDeploy'
-  params: {
-    resourcePrefix: redResourcePrefix
-    location: location
-    tenantId: az.subscription().tenantId
-    tagValues: tagValues
-  }
-}
 
 //Deploy PostgreSQL Database
 module databaseModule 'components/postgresqlDatabase.bicep' = {
@@ -187,12 +194,12 @@ module databaseModule 'components/postgresqlDatabase.bicep' = {
   params: {
     resourcePrefix: resourcePrefix
     location: location
-    serverName: postgreSQLserverName
+    serverName: dbServerName
     adminName: dbAdminName
     adminPassword: dbAdminPassword
     dbSkuName: dbSkuName
-    storageSizeGB: storageSizeGB
-    autoGrowStatus: autoGrowStatus
+    dbStorageSizeGB: dbStorageSizeGB 
+    dbAutoGrowStatus: dbAutoGrowStatus
     keyVaultName: keyVaultModule.outputs.keyVaultName
     tagValues: tagValues
   }
@@ -224,19 +231,11 @@ module containerAppModule 'components/containerApp.bicep' = {
     containerAppEnvName: containerAppEnvName
     containerAppLogAnalyticsName: containerAppLogAnalyticsName
     acrLoginServer: containerRegistryModule.outputs.containerRegistryLoginServer
-    acrHostedImageName: acrHostedImageName
-    targetPort: targetPort
+    containerAppImageName: containerAppImageName
+    containerAppTargetPort: containerAppTargetPort
     useDummyImage: useDummyImage
-    envParams: [
-      {
-        name: 'adoDBConnectionString'
-        value: databaseModule.outputs.dbConnectionString
-      }
-      {
-        name: 'serviceBusConnectionString'
-        value: serviceBusFunctionQueueModule.outputs.serviceBusConnectionString
-      }
-    ]
+    dbConnectionString: keyVault.getSecret(databaseModule.outputs.connectionStringSecretName)
+    serviceBusConnectionString: keyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
     tagValues: tagValues
   }
 }
@@ -249,8 +248,12 @@ module serviceBusFunctionQueueModule 'components/serviceBusQueue.bicep' = {
     location: location
     namespaceName: namespaceName
     queueName:queueName
+    keyVaultName: keyVaultModule.outputs.keyVaultName
     tagValues: tagValues
   }
+  dependsOn: [
+    keyVaultModule
+  ]
 }
 
 //Deploy ETL Function
@@ -260,13 +263,9 @@ module etlFunctionAppModule 'application/processorFunctionApp.bicep' = {
     resourcePrefix: resourcePrefix
     location: location
     functionAppName: functionAppName
-    storageAccountConnectionString: storageAccountModule.outputs.storageAccountConnectionString
-    settings: {
-      keyVaultName: keyVaultModule.outputs.keyVaultName
-      databaseConnectionStringURI: databaseModule.outputs.connectionStringSecretUri
-      serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.serviceBusConnectionString
-    }
-
+    storageAccountConnectionString: keyVault.getSecret(storageAccountModule.outputs.connectionStringSecretName)
+    dbConnectionString: keyVault.getSecret(databaseModule.outputs.connectionStringSecretName)
+    serviceBusConnectionString: keyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
     tagValues: tagValues
   }
   dependsOn: [
