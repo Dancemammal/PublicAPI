@@ -152,7 +152,7 @@ module keyVaultModule 'components/keyVault.bicep' = {
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
-  name: keyVaultModule.name
+  name: keyVaultModule.outputs.keyVaultName
 }
 
 //Deploy Storage Account
