@@ -24,25 +24,18 @@ param appServicePlanOS string = 'Windows'
 ])
 param functionAppRuntime string = 'dotnet'
 
-@description('Storage Account connection string')
-@secure()
-param storageAccountConnectionString string
+@description('Specifies the additional setting to add to the functionapp.')
+param settings object
 
-@description('Key Vault URI Connection String reference')
-@secure()
-param databaseConnectionString string
 
-@description('Key Vault URI Connection String reference')
-@secure()
-param serviceBusConnectionString string
 
 //Passed in Tags
 param tagValues object
 
 // Variables and created data
 var kind = 'functionapp'
-var databaseConnectionStringKeyVaultRef = '@Microsoft.KeyVault(SecretUri=${databaseConnectionString})'
-var appServicePlanName = '${resourcePrefix}-aps-${functionAppName}'
+var databaseConnectionStringKeyVaultRef = '@Microsoft.KeyVault(SecretUri=${settings.databaseConnectionStringURI})'
+var appServicePlanName = '${resourcePrefix}-asp-${functionAppName}'
 var reserved = appServicePlanOS == 'Linux' ? true : false
 var applicationInsightsName ='${resourcePrefix}-ai-${functionAppName}'
 var functionName = '${resourcePrefix}-fa-${functionAppName}'
@@ -98,17 +91,14 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 resource functionAppSettings 'Microsoft.Web/sites/config@2023-01-01' = {
   parent: functionApp
   name: 'appsettings'
-  properties: {
-    AzureWebJobsStorage: storageAccountConnectionString
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
+  properties: union(settings, {
     WEBSITE_CONTENTSHARE: toLower(functionAppName)
     FUNCTIONS_EXTENSION_VERSION: '~4'
     APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsightsModule.outputs.applicationInsightsKey
     FUNCTIONS_WORKER_RUNTIME: functionAppRuntime
     WEBSITE_RUN_FROM_PACKAGE: '1'
-    DatabaseConnectionString: databaseConnectionStringKeyVaultRef
-    ServiceBusConnectionString: serviceBusConnectionString
-  }
+    databaseConnectionStringKeyVaultRef: databaseConnectionStringKeyVaultRef
+  })
 }
 
 

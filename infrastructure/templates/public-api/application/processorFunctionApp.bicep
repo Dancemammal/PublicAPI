@@ -11,18 +11,8 @@ param functionAppRuntime string = 'dotnet'
 @description('Specifies the name of the function.')
 param functionAppName string = 'publicapi-processor'
 
-@description('Specifies the name of the Key Vault.')
-param keyVaultName string
-
-@description('Database Connection String URI')
-@secure()
-param databaseConnectionStringURI string
-
-@description('Storage Account Connection String')
-param storageAccountConnectionString string
-
-@description('Service Bus Connection String reference')
-param serviceBusConnectionString string
+@description('Specifies the additional setting to add to the functionapp.')
+param settings object
 
 //Passed in Tags
 param tagValues object
@@ -37,16 +27,14 @@ param tagValues object
 
 //Function App Deployment
 module functionAppModule '../components/functionApp.bicep' = {
-  name: 'functionAppDeploy-${functionAppName}'
+  name: '${resourcePrefix}-${functionAppName}'
   params: {
     resourcePrefix: resourcePrefix
     functionAppName: functionAppName
     location: location
     tagValues: tagValues
-    databaseConnectionString: databaseConnectionStringURI
+    settings: settings
     functionAppRuntime: functionAppRuntime
-    storageAccountConnectionString: storageAccountConnectionString
-    serviceBusConnectionString: serviceBusConnectionString
   }
 }
 
@@ -54,7 +42,7 @@ module functionAppModule '../components/functionApp.bicep' = {
 module keyVaultAccessPolicy '../components/keyVaultAccessPolicy.bicep' = {
   name: 'keyVaultAccessPolicyDeploy-${functionAppName}'
   params: {
-    keyVaultName: keyVaultName
+    keyVaultName: settings.keyVaultName
     principalId: functionAppModule.outputs.principalId
     tenantId: functionAppModule.outputs.tenantId
   }
