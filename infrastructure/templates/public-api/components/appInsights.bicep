@@ -10,8 +10,7 @@ param appInsightsName string
 
 // Variables and created data
 var kind = 'web'
-var insightsName = '${resourcePrefix}-as-${appInsightsName}'
-
+var insightsName = '${resourcePrefix}-ai-${appInsightsName}'
 
 
 //Resources

@@ -255,7 +255,7 @@ module serviceBusFunctionQueueModule 'components/serviceBusQueue.bicep' = {
 
 //Deploy ETL Function
 module etlFunctionAppModule 'application/processorFunctionApp.bicep' = {
-  name: 'etlFunctionAppDeploy'
+  name: 'processorFunctionAppDeploy'
   params: {
     resourcePrefix: resourcePrefix
     location: location

@@ -92,7 +92,7 @@ resource postgreSQLDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2023-03-0
 
 //store connections string
 module storeADOConnectionStringToKeyVault './keyVaultSecret.bicep' = {
-  name: 'connectionString'
+  name: 'dbConnectionStringSecretDeploy'
   params: {
     keyVaultName: keyVaultName
     isEnabled: true

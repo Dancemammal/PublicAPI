@@ -59,5 +59,3 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-prev
 output serviceBusQueueRef string = serviceBusQueue.id
 output serviceBusQueueName string = serviceBusQueue.name
 output serviceBusConnectionString string = serviceBusConnectionString
-
-

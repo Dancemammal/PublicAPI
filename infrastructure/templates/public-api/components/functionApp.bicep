@@ -39,18 +39,17 @@ var kind = 'functionapp'
 var databaseConnectionStringKeyVaultRef = '@Microsoft.KeyVault(SecretUri=${settings.databaseConnectionStringURI})'
 var appServicePlanName = '${resourcePrefix}-asp-${functionAppName}'
 var reserved = appServicePlanOS == 'Linux' ? true : false
-var applicationInsightsName ='${resourcePrefix}-ai-${functionAppName}'
 var functionName = '${resourcePrefix}-fa-${functionAppName}'
 
-//Resources
 
+//Resources
 //Application Insights Deployment
 module applicationInsightsModule '../components/appInsights.bicep' = {
   name: 'appInsightsDeploy-${functionAppName}'
   params: {
     resourcePrefix: resourcePrefix
     location: location
-    appInsightsName: applicationInsightsName
+    appInsightsName: functionAppName
   }
 }
 
