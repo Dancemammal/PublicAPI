@@ -151,7 +151,7 @@ module keyVaultModule 'components/keyVault.bicep' = {
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
+resource eesKeyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
   name: keyVaultModule.outputs.keyVaultName
   scope: resourceGroup(az.subscription().id, resourceGroup().name )
 }
@@ -236,8 +236,8 @@ module containerAppModule 'components/containerApp.bicep' = {
     containerAppImageName: containerAppImageName
     containerAppTargetPort: containerAppTargetPort
     useDummyImage: useDummyImage
-    dbConnectionString: keyVault.getSecret(databaseModule.outputs.connectionStringSecretName)
-    serviceBusConnectionString: keyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
+    dbConnectionString: eesKeyVault.getSecret(databaseModule.outputs.connectionStringSecretName)
+    serviceBusConnectionString: eesKeyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
     tagValues: tagValues
   }
 }
@@ -265,14 +265,16 @@ module etlFunctionAppModule 'application/processorFunctionApp.bicep' = {
     resourcePrefix: resourcePrefix
     location: location
     functionAppName: functionAppName
-    storageAccountConnectionString: keyVault.getSecret(storageAccountModule.outputs.connectionStringSecretName)
-    dbConnectionString: keyVault.getSecret(databaseModule.outputs.connectionStringSecretName)
-    serviceBusConnectionString: keyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
+    storageAccountConnectionString: eesKeyVault.getSecret(storageAccountModule.outputs.connectionStringSecretName)
+    dbConnectionString: eesKeyVault.getSecret(databaseModule.outputs.connectionStringSecretName)
+    serviceBusConnectionString: eesKeyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
     tagValues: tagValues
   }
   dependsOn: [
-    serviceBusFunctionQueueModule
     keyVaultModule
+    databaseModule
+    storageAccountModule
+    serviceBusFunctionQueueModule
   ]
 }
 
