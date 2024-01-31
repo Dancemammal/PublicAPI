@@ -260,10 +260,10 @@ module etlFunctionAppModule 'application/processorFunctionApp.bicep' = {
     resourcePrefix: resourcePrefix
     location: location
     functionAppName: functionAppName
+    storageAccountConnectionString: storageAccountModule.outputs.storageAccountConnectionString
     settings: {
       keyVaultName: keyVaultModule.outputs.keyVaultName
       databaseConnectionStringURI: databaseModule.outputs.connectionStringSecretUri
-      storageAccountConnectionString: storageAccountModule.outputs.storageAccountConnectionString
       serviceBusConnectionString: serviceBusFunctionQueueModule.outputs.serviceBusConnectionString
     }
 

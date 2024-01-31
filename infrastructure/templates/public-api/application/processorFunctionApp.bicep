@@ -11,6 +11,10 @@ param functionAppRuntime string = 'dotnet'
 @description('Specifies the name of the function.')
 param functionAppName string = 'publicapi-processor'
 
+@description('Storage Account connection string')
+@secure()
+param storageAccountConnectionString string
+
 @description('Specifies the additional setting to add to the functionapp.')
 param settings object
 
@@ -31,6 +35,7 @@ module functionAppModule '../components/functionApp.bicep' = {
   params: {
     resourcePrefix: resourcePrefix
     functionAppName: functionAppName
+    storageAccountConnectionString: storageAccountConnectionString
     location: location
     tagValues: tagValues
     settings: settings

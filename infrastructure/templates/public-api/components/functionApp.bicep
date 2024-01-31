@@ -24,10 +24,12 @@ param appServicePlanOS string = 'Windows'
 ])
 param functionAppRuntime string = 'dotnet'
 
+@description('Storage Account connection string')
+@secure()
+param storageAccountConnectionString string
+
 @description('Specifies the additional setting to add to the functionapp.')
 param settings object
-
-
 
 //Passed in Tags
 param tagValues object
@@ -92,6 +94,8 @@ resource functionAppSettings 'Microsoft.Web/sites/config@2023-01-01' = {
   parent: functionApp
   name: 'appsettings'
   properties: union(settings, {
+    AzureWebJobsStorage: storageAccountConnectionString
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
     WEBSITE_CONTENTSHARE: toLower(functionAppName)
     FUNCTIONS_EXTENSION_VERSION: '~4'
     APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsightsModule.outputs.applicationInsightsKey

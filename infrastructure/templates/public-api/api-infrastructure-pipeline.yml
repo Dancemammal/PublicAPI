@@ -20,6 +20,10 @@ parameters:
     displayName: The current Azure subscription 
     type: string
     default: 'AzureConnection'
+  - name: dbAdminPassword
+    displayName: The Postgresql DB Admin Password 
+    type: string
+    default: 'postgreSQLAdminPassword'
 
 variables:
   isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
@@ -86,7 +90,8 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{parameters.azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}}
+              overrideParameters: '-dbAdminPassword $(dbAdminPassword)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -112,7 +117,8 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{parameters.azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}}
+              overrideParameters: '-dbAdminPassword $(dbAdminPassword)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -138,7 +144,8 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{parameters.azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}}
+              overrideParameters: '-dbAdminPassword $(dbAdminPassword)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -164,7 +171,8 @@ stages:
           - task: AzureCLI@2
             displayName: 'Deploy bicep template to Azure'
             inputs:
-              azureSubscription: ${{parameters.azureSubscription}} 
+              azureSubscription: ${{parameters.azureSubscription}}
+              overrideParameters: '-dbAdminPassword $(dbAdminPassword)'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |

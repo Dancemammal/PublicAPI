@@ -10,7 +10,7 @@ param deploySubnets = true
 
 //PostgreSQL Database Params -------------------------------------------------------------------
 param dbAdminName = 'PostgreSQLAdmin'
-param dbAdminPassword = 'postgreSQLAdminPassword'
+param dbAdminPassword = 'adminPassword'
 param dbSkuName = 'Standard_B1ms'
 param storageSizeGB = 32
 param autoGrowStatus = 'Disabled'
