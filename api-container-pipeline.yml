@@ -1,0 +1,111 @@
+# Docker 
+# Build and push and image to the container registry
+
+parameters:
+  - name: DeployBranches
+    displayName: Branches that should be deployed
+    type: object
+    default:
+      - master
+      - dev
+
+variables:
+  BuildConfiguration: 'Release'
+  IsBranchDeployable: ${{ containsValue(parameters.DeployBranches, variables['Build.SourceBranchName']) }}
+  CI: true
+  NODE_VERSION: 18.18.2
+  isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  vmImageName: 'ubuntu-latest'
+  azureSubscription: 'AzureConnection'
+  dockerRegistryServiceConnection: '<SERVICE_CONNECTION_NAME>'
+  imageRepository: '<IMAGE_NAME>'
+  dockerfilePath: '$(Build.SourcesDirectory)/app/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+trigger:
+  branches:
+    include:
+      - master
+      - dev
+  paths:
+    exclude:
+      - infrastructure/
+pr:
+  - master
+  - dev
+
+
+jobs:
+  - job: 'Backend'
+    pool: 'ees-ubuntu2204-large'
+    workspace:
+      clean: all
+    steps:
+      - task: UseDotNet@2
+        displayName: 'Install .NET 8.0 SDK'
+        inputs:
+          version: 8.0.x
+          performMultiLevelLookup: true
+
+      - task: UseDotNet@2
+        displayName: 'Install .NET 6.0 SDK'
+        inputs:
+          version: 6.0.x
+          performMultiLevelLookup: true
+
+      - task: 'DotNetCoreCLI@2'
+        displayName: 'Restore'
+        inputs:
+          command: 'restore'
+          projects: '**/GovUk.*/*csproj'
+          feedsToUse: config
+          nugetConfigPath: src/nuget.config
+
+      - task: 'DotNetCoreCLI@2'
+        displayName: 'Build'
+        inputs:
+          projects: '**/GovUk.*/*csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+
+      - task: 'DotNetCoreCLI@2'
+        displayName: 'Test'
+        inputs:
+          command: 'test'
+          projects: '**/GovUk.*[Tt]ests/*.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+
+      - task: 'DotNetCoreCLI@2'
+        displayName: 'Publish Public Data API'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: '**/GovUk.Education.ExploreEducationStatistics.Public.Data.Api.csproj'
+          arguments: '--self-contained true -r win-x64 --configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/public-data-api'
+          zipAfterPublish: True
+
+      - task: 'PublishPipelineArtifact@0'
+        displayName: 'Publish Public Data API Artifacts'
+        inputs:
+          artifactName: 'public-api'
+          targetPath: '$(Build.ArtifactStagingDirectory)/public-data-api'
+
+
+
+  - job: Build Public Data API
+    displayName: Build Public Data API Docker Image
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DockerInstaller@0
+      inputs:
+        dockerVersion: '17.09.0-ce'
+
+    - task: Docker@2
+      displayName: Build and publish image to Azure Container Registry
+      inputs:
+        command: buildAndPush
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        tags: $(tag)

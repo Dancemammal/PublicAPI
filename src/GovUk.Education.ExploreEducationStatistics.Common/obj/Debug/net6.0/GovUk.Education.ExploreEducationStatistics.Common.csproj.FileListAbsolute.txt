@@ -1,0 +1,12 @@
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\bin\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.deps.json
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\bin\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.dll
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\bin\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.pdb
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.csproj.AssemblyReference.cache
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.AssemblyInfoInputs.cache
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.AssemblyInfo.cs
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.csproj.CoreCompileInputs.cache
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.dll
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\refint\GovUk.Education.ExploreEducationStatistics.Common.dll
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\GovUk.Education.ExploreEducationStatistics.Common.pdb
+C:\Source Code\DfE\EES\src\GovUk.Education.ExploreEducationStatistics.Common\obj\Debug\net6.0\ref\GovUk.Education.ExploreEducationStatistics.Common.dll
