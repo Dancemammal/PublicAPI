@@ -156,7 +156,6 @@ resource eesKeyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
   scope: resourceGroup(az.subscription().id, resourceGroup().name )
 }
 
-
 //Deploy Storage Account
 module storageAccountModule 'components/storageAccount.bicep' = {
   name: 'storageAccountDeploy'
@@ -240,6 +239,11 @@ module containerAppModule 'components/containerApp.bicep' = {
     serviceBusConnectionString: eesKeyVault.getSecret(serviceBusFunctionQueueModule.outputs.connectionStringSecretName)
     tagValues: tagValues
   }
+  dependsOn: [
+    keyVaultModule
+    databaseModule
+    serviceBusFunctionQueueModule
+  ]
 }
 
 //Deploy Service Bus
