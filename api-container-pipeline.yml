@@ -50,7 +50,7 @@ variables:
 
 
 jobs:
-  - job: 'API Backend'
+  - job: 'API_Backend'
     pool: 'ees-ubuntu2204-large'
     workspace:
       clean: all
@@ -98,7 +98,7 @@ jobs:
           targetPath: '$(Build.ArtifactStagingDirectory)/public_data_api'
 
 
-  - job: Build Public Data API
+  - job: Build_API_cobtainer
     displayName: Build Public Data API Docker Image
     pool:
       vmImage: $(vmImageName)
