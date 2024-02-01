@@ -25,9 +25,9 @@ parameters:
     type: string
     default: 'dfe-development'
   - name: azureServiceConnection
-    displayName: The current Azure service connection 
+    displayName: The current Azure ACR service connection 
     type: string
-    default: 'AzureConnection'
+    default: 'ACRServiceConnection'
   - name: containerRegistryName
     displayName: The container registry to push the image to
     type: string
