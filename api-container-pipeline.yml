@@ -24,8 +24,8 @@ parameters:
     displayName: Resource Group Name
     type: string
     default: 'dfe-development'
-  - name: azureSubscription
-    displayName: The current Azure subscription 
+  - name: azureServiceConnection
+    displayName: The current Azure service connection 
     type: string
     default: 'AzureConnection'
   - name: containerRegistryName
@@ -39,8 +39,7 @@ variables:
   CI: true
   isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-  azureSubscription: 'AzureConnection'
-  dockerRegistryServiceConnection: '<SERVICE_CONNECTION_NAME>' 
+  dockerRegistryServiceConnection: ${{parameters.azureServiceConnection}}
   imageRepository: 'publicapi'
   dockerfilePath: '$(Build.SourcesDirectory)/docker/public-api/Dockerfile'
   tag: '$(Build.BuildId)'
