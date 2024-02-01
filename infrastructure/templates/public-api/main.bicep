@@ -153,6 +153,7 @@ module keyVaultModule 'components/keyVault.bicep' = {
 
 resource eesKeyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: keyVaultModule.outputs.keyVaultName
+  scope: resourceGroup(resourceGroup().name)
 }
 
 //Deploy Storage Account
