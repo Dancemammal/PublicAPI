@@ -8,12 +8,25 @@ parameters:
     default:
       - master
       - dev
+  - name: resourceGroupName
+    displayName: Resource Group Name
+    type: string
+    default: 'dfe-development'
+  - name: azureSubscription
+    displayName: The current Azure subscription 
+    type: string
+    default: 'AzureConnection'
+  - name: containerRegistryName
+    displayName: The container registry to push the image to
+    type: string
+    default: 's101eescrpublicapi'
+
+
 
 variables:
   BuildConfiguration: 'Release'
   IsBranchDeployable: ${{ containsValue(parameters.DeployBranches, variables['Build.SourceBranchName']) }}
   CI: true
-  NODE_VERSION: 18.18.2
   isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   vmImageName: 'ubuntu-latest'
@@ -37,7 +50,7 @@ pr:
 
 
 jobs:
-  - job: 'Backend'
+  - job: 'API Backend'
     pool: 'ees-ubuntu2204-large'
     workspace:
       clean: all
@@ -46,12 +59,6 @@ jobs:
         displayName: 'Install .NET 8.0 SDK'
         inputs:
           version: 8.0.x
-          performMultiLevelLookup: true
-
-      - task: UseDotNet@2
-        displayName: 'Install .NET 6.0 SDK'
-        inputs:
-          version: 6.0.x
           performMultiLevelLookup: true
 
       - task: 'DotNetCoreCLI@2'
@@ -65,14 +72,14 @@ jobs:
       - task: 'DotNetCoreCLI@2'
         displayName: 'Build'
         inputs:
-          projects: '**/GovUk.*/*csproj'
+          projects: '**/GovUk.*/GovUk.Education.ExploreEducationStatistics.Public.Data.Api.csproj'
           arguments: '--configuration $(BuildConfiguration)'
 
       - task: 'DotNetCoreCLI@2'
         displayName: 'Test'
         inputs:
           command: 'test'
-          projects: '**/GovUk.*[Tt]ests/*.csproj'
+          projects: '**/GovUk.*[Tt]ests/GovUk.Education.ExploreEducationStatistics.Public.Data.Api.csproj'
           arguments: '--configuration $(BuildConfiguration)'
 
       - task: 'DotNetCoreCLI@2'
@@ -87,9 +94,8 @@ jobs:
       - task: 'PublishPipelineArtifact@0'
         displayName: 'Publish Public Data API Artifacts'
         inputs:
-          artifactName: 'public-api'
-          targetPath: '$(Build.ArtifactStagingDirectory)/public-data-api'
-
+          artifactName: 'public_data_api'
+          targetPath: '$(Build.ArtifactStagingDirectory)/public_data_api'
 
 
   - job: Build Public Data API
