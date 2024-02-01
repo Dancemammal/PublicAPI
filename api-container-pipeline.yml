@@ -65,7 +65,7 @@ jobs:
         displayName: 'Restore'
         inputs:
           command: 'restore'
-          projects: '**/GovUk.*/*csproj'
+          projects: '**/GovUk.Education.ExploreEducationStatistics.Public.Data.Api.csproj'
           feedsToUse: config
           nugetConfigPath: src/nuget.config
 
