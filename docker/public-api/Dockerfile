@@ -4,5 +4,5 @@ WORKDIR /App
 EXPOSE 80
 EXPOSE 443
 
-COPY ./the-artifact-dir/out ./
+COPY ./public_data_api/GovUk.Education.ExploreEducationStatistics.Public.Data.Api ./
 ENTRYPOINT ["dotnet", "GovUk.Education.ExploreEducationStatistics.Public.Data.Api.dll"]
