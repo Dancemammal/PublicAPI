@@ -51,7 +51,8 @@ variables:
 
 jobs:
   - job: 'API_Backend'
-    pool: 'ees-ubuntu2204-large'
+    pool:
+      vmImage: $(vmImageName)
     workspace:
       clean: all
     steps:
