@@ -36,7 +36,6 @@ param tagValues object
 
 // Variables and created data
 var kind = 'functionapp'
-var databaseConnectionStringKeyVaultRef = '@Microsoft.KeyVault(SecretUri=${settings.databaseConnectionStringURI})'
 var appServicePlanName = '${resourcePrefix}-asp-${functionAppName}'
 var reserved = appServicePlanOS == 'Linux' ? true : false
 var functionName = '${resourcePrefix}-fa-${functionAppName}'
@@ -100,7 +99,6 @@ resource functionAppSettings 'Microsoft.Web/sites/config@2023-01-01' = {
     APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsightsModule.outputs.applicationInsightsKey
     FUNCTIONS_WORKER_RUNTIME: functionAppRuntime
     WEBSITE_RUN_FROM_PACKAGE: '1'
-    databaseConnectionStringKeyVaultRef: databaseConnectionStringKeyVaultRef
   })
 }
 

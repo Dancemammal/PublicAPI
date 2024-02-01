@@ -15,8 +15,13 @@ param functionAppName string = 'publicapi-processor'
 @secure()
 param storageAccountConnectionString string
 
-@description('Specifies the additional setting to add to the functionapp.')
-param settings object
+@description('Specifies the database connection string')
+@secure()
+param dbConnectionString string
+
+@description('Specifies the service bus connection string.')
+@secure()
+param serviceBusConnectionString string
 
 //Passed in Tags
 param tagValues object
@@ -25,9 +30,11 @@ param tagValues object
 // Variables and created data
 
 
+
 //---------------------------------------------------------------------------------------------------------------
 // All resources via modules
 //---------------------------------------------------------------------------------------------------------------
+
 
 //Function App Deployment
 module functionAppModule '../components/functionApp.bicep' = {
@@ -38,21 +45,10 @@ module functionAppModule '../components/functionApp.bicep' = {
     storageAccountConnectionString: storageAccountConnectionString
     location: location
     tagValues: tagValues
-    settings: settings
+    settings: {
+      dbConnectionString: dbConnectionString
+      serviceBusConnectionString: serviceBusConnectionString
+    }
     functionAppRuntime: functionAppRuntime
   }
 }
-
-//Key Vault Access Policy Deployment
-module keyVaultAccessPolicy '../components/keyVaultAccessPolicy.bicep' = {
-  name: 'keyVaultAccessPolicyDeploy-${functionAppName}'
-  params: {
-    keyVaultName: settings.keyVaultName
-    principalId: functionAppModule.outputs.principalId
-    tenantId: functionAppModule.outputs.tenantId
-  }
-  dependsOn: [
-    functionAppModule
-  ]
-}
-
