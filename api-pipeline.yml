@@ -48,7 +48,7 @@ jobs:
           command: 'restore'
           projects: '**/GovUk.*/*csproj'
           feedsToUse: config
-          nugetConfigPath: src/nuget.config
+          nugetConfigPath: nuget.config
 
       - task: 'DotNetCoreCLI@2'
         displayName: 'Build'
