@@ -89,7 +89,7 @@ jobs:
           publishWebProjects: false
           projects: '**/GovUk.Education.ExploreEducationStatistics.Public.Data.Api.csproj'
           arguments: '--self-contained true -r win-x64 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/public_data_api'
-          zipAfterPublish: true
+          zipAfterPublish: false
 
       - task: 'PublishPipelineArtifact@0'
         displayName: 'Publish Public Data API Artifacts'
@@ -98,7 +98,7 @@ jobs:
           targetPath: '$(Build.ArtifactStagingDirectory)/public_data_api'
 
 
-  - job: Build_API_cobtainer
+  - job: Build_API_container
     displayName: Build Public Data API Docker Image
     pool:
       vmImage: $(vmImageName)
