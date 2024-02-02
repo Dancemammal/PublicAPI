@@ -4,5 +4,5 @@ WORKDIR /App
 EXPOSE 80
 EXPOSE 443
 
-COPY ./public_data_api ./
+COPY ["./public_data_api", "."]
 ENTRYPOINT ["dotnet", "GovUk.Education.ExploreEducationStatistics.Public.Data.Api.dll"]
