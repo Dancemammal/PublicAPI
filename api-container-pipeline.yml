@@ -41,7 +41,8 @@ variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   dockerRegistryServiceConnection: ${{parameters.azureServiceConnection}}
   imageRepository: 'publicapi'
-  dockerfilePath: '$(Build.SourcesDirectory)/docker/public-api/Dockerfile'
+  #dockerfilePath: '$(Build.SourcesDirectory)/docker/public-api/Dockerfile'
+  dockerfilePath: '$(Build.Repository.LocalPath)/Docker/public-api/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -114,4 +115,5 @@ jobs:
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
+        buildContext: '$(Build.ArtifactStagingDirectory)'
         tags: $(tag)
