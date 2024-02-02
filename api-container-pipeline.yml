@@ -42,7 +42,6 @@ variables:
   dockerRegistryServiceConnection: ${{parameters.azureServiceConnection}}
   imageRepository: 'publicapi'
   dockerfilePath: '$(Build.SourcesDirectory)/docker/public-api'
-  #dockerfilePath: '$(Build.Repository.LocalPath)/docker/public-api'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -115,5 +114,5 @@ jobs:
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        buildContext: '$(Build.ArtifactStagingDirectory)'
+        buildContext: '$(Build.SourcesDirectory)'
         tags: $(tag)
