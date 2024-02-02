@@ -42,7 +42,7 @@ variables:
   dockerRegistryServiceConnection: ${{parameters.azureServiceConnection}}
   imageRepository: 'publicapi'
   #dockerfilePath: '$(Build.SourcesDirectory)/docker/public-api/Dockerfile'
-  dockerfilePath: '$(Build.Repository.LocalPath)/Docker/public-api/Dockerfile'
+  dockerfilePath: '$(Build.Repository.LocalPath)/docker/public-api/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
