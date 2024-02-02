@@ -41,7 +41,7 @@ variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   dockerRegistryServiceConnection: ${{parameters.azureServiceConnection}}
   imageRepository: 'publicapi'
-  dockerfilePath: '$(Build.SourcesDirectory)/docker/public-api'
+  dockerfilePath: '/docker/public-api' 
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -91,13 +91,6 @@ jobs:
           arguments: '--self-contained true -r win-x64 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/public_data_api'
           zipAfterPublish: false
 
-      - task: 'PublishPipelineArtifact@0'
-        displayName: 'Publish Public Data API Artifacts'
-        inputs:
-          artifactName: 'public_data_api'
-          targetPath: '$(Build.ArtifactStagingDirectory)/public_data_api'
-
-
   - job: Build_API_container
     displayName: Build Public Data API Docker Image
     pool:
@@ -108,11 +101,24 @@ jobs:
         dockerVersion: '17.09.0-ce'
 
     - task: Docker@2
-      displayName: Build and publish image to Azure Container Registry
+      displayName: Build public ai container app image 
+      condition: eq(variables.IsBranchDeployable, true)
       inputs:
-        command: buildAndPush
         containerRegistry: $(dockerRegistryServiceConnection)
         repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        buildContext: '$(Build.SourcesDirectory)'
-        tags: $(tag)
+        command: 'build'
+        Dockerfile: $(dockerfilePath)
+        buildContext: '$(System.DefaultWorkingDirectory)'
+        tags: $(Build.BuildNumber)
+        arguments: '--build-arg BUILD_BUILDNUMBER=$(Build.BuildNumber)'
+
+    - task: Docker@2
+      displayName: 'Push public api container app image '
+      condition: eq(variables.IsBranchDeployable, true)
+      inputs:
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        command: 'push'
+        Dockerfile: $(dockerfilePath)
+        buildContext: '$(System.DefaultWorkingDirectory)'
+        tags: $(Build.BuildNumber)
